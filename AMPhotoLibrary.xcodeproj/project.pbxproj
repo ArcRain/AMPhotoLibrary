@@ -1,0 +1,356 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D535FEDB19D8079800BC1375 /* PhotoAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D535FEDA19D8079800BC1375 /* PhotoAlbumViewController.m */; };
+		D535FEDE19D8091700BC1375 /* PhotoAssetsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D535FEDD19D8091700BC1375 /* PhotoAssetsViewController.m */; };
+		D535FEE119D80B3500BC1375 /* AMPhotoAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = D535FEE019D80B3500BC1375 /* AMPhotoAsset.m */; };
+		D564644219D79FB3000F7B34 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D564644119D79FB3000F7B34 /* main.m */; };
+		D564644519D79FB3000F7B34 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D564644419D79FB3000F7B34 /* AppDelegate.m */; };
+		D564644D19D79FB3000F7B34 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D564644C19D79FB3000F7B34 /* Images.xcassets */; };
+		D564645019D79FB3000F7B34 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D564644E19D79FB3000F7B34 /* LaunchScreen.xib */; };
+		D564646819D79FF7000F7B34 /* AMPhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D564646719D79FF7000F7B34 /* AMPhotoLibrary.m */; };
+		D564646F19D7A3FD000F7B34 /* AMALAssetsLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D564646E19D7A3FD000F7B34 /* AMALAssetsLibrary.m */; };
+		D564647619D7AB2B000F7B34 /* AMPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = D564647519D7AB2B000F7B34 /* AMPhotoAlbum.m */; };
+		D564647F19D7B6B4000F7B34 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D564647B19D7B6A7000F7B34 /* AssetsLibrary.framework */; settings = {ATTRIBUTES = (Required, ); }; };
+		D564648019D7B6B8000F7B34 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D564647D19D7B6AC000F7B34 /* Photos.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		D564648619D7DD22000F7B34 /* AMPHPhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D564648519D7DD22000F7B34 /* AMPHPhotoLibrary.m */; };
+		D57A210E19D93C2D009DFDD9 /* PhotoDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D57A210D19D93C2D009DFDD9 /* PhotoDetailViewController.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D535FED919D8079800BC1375 /* PhotoAlbumViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoAlbumViewController.h; sourceTree = "<group>"; };
+		D535FEDA19D8079800BC1375 /* PhotoAlbumViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoAlbumViewController.m; sourceTree = "<group>"; };
+		D535FEDC19D8091700BC1375 /* PhotoAssetsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoAssetsViewController.h; sourceTree = "<group>"; };
+		D535FEDD19D8091700BC1375 /* PhotoAssetsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoAssetsViewController.m; sourceTree = "<group>"; };
+		D535FEDF19D80B3500BC1375 /* AMPhotoAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoAsset.h; path = AMPhotoLibrary/AMPhotoAsset.h; sourceTree = "<group>"; };
+		D535FEE019D80B3500BC1375 /* AMPhotoAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMPhotoAsset.m; path = AMPhotoLibrary/AMPhotoAsset.m; sourceTree = "<group>"; };
+		D564643C19D79FB3000F7B34 /* AMPhotoLibrary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AMPhotoLibrary.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D564644019D79FB3000F7B34 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D564644119D79FB3000F7B34 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		D564644319D79FB3000F7B34 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		D564644419D79FB3000F7B34 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		D564644C19D79FB3000F7B34 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		D564644F19D79FB3000F7B34 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		D564646619D79FF7000F7B34 /* AMPhotoLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoLibrary.h; path = AMPhotoLibrary/AMPhotoLibrary.h; sourceTree = "<group>"; };
+		D564646719D79FF7000F7B34 /* AMPhotoLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMPhotoLibrary.m; path = AMPhotoLibrary/AMPhotoLibrary.m; sourceTree = "<group>"; };
+		D564646D19D7A3FD000F7B34 /* AMALAssetsLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMALAssetsLibrary.h; path = AMPhotoLibrary/AMALAssetsLibrary.h; sourceTree = "<group>"; };
+		D564646E19D7A3FD000F7B34 /* AMALAssetsLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMALAssetsLibrary.m; path = AMPhotoLibrary/AMALAssetsLibrary.m; sourceTree = "<group>"; };
+		D564647019D7A413000F7B34 /* AMPhotoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoManager.h; path = AMPhotoLibrary/AMPhotoManager.h; sourceTree = "<group>"; };
+		D564647419D7AB2B000F7B34 /* AMPhotoAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoAlbum.h; path = AMPhotoLibrary/AMPhotoAlbum.h; sourceTree = "<group>"; };
+		D564647519D7AB2B000F7B34 /* AMPhotoAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMPhotoAlbum.m; path = AMPhotoLibrary/AMPhotoAlbum.m; sourceTree = "<group>"; };
+		D564647A19D7B262000F7B34 /* AMPhotoLibrary_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AMPhotoLibrary_Prefix.pch; sourceTree = "<group>"; };
+		D564647B19D7B6A7000F7B34 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		D564647D19D7B6AC000F7B34 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		D564648419D7DD22000F7B34 /* AMPHPhotoLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPHPhotoLibrary.h; path = AMPhotoLibrary/AMPHPhotoLibrary.h; sourceTree = "<group>"; };
+		D564648519D7DD22000F7B34 /* AMPHPhotoLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMPHPhotoLibrary.m; path = AMPhotoLibrary/AMPHPhotoLibrary.m; sourceTree = "<group>"; };
+		D57A210C19D93C2D009DFDD9 /* PhotoDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoDetailViewController.h; sourceTree = "<group>"; };
+		D57A210D19D93C2D009DFDD9 /* PhotoDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoDetailViewController.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D564643919D79FB3000F7B34 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D564648019D7B6B8000F7B34 /* Photos.framework in Frameworks */,
+				D564647F19D7B6B4000F7B34 /* AssetsLibrary.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D564643319D79FB3000F7B34 = {
+			isa = PBXGroup;
+			children = (
+				D564647D19D7B6AC000F7B34 /* Photos.framework */,
+				D564647B19D7B6A7000F7B34 /* AssetsLibrary.framework */,
+				D564643E19D79FB3000F7B34 /* AMPhotoLibrary */,
+				D564643D19D79FB3000F7B34 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D564643D19D79FB3000F7B34 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D564643C19D79FB3000F7B34 /* AMPhotoLibrary.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D564643E19D79FB3000F7B34 /* AMPhotoLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				D564646519D79FD0000F7B34 /* AMPhotoLibrary */,
+				D564644319D79FB3000F7B34 /* AppDelegate.h */,
+				D564644419D79FB3000F7B34 /* AppDelegate.m */,
+				D535FED919D8079800BC1375 /* PhotoAlbumViewController.h */,
+				D535FEDA19D8079800BC1375 /* PhotoAlbumViewController.m */,
+				D535FEDC19D8091700BC1375 /* PhotoAssetsViewController.h */,
+				D535FEDD19D8091700BC1375 /* PhotoAssetsViewController.m */,
+				D57A210C19D93C2D009DFDD9 /* PhotoDetailViewController.h */,
+				D57A210D19D93C2D009DFDD9 /* PhotoDetailViewController.m */,
+				D564644C19D79FB3000F7B34 /* Images.xcassets */,
+				D564644E19D79FB3000F7B34 /* LaunchScreen.xib */,
+				D564643F19D79FB3000F7B34 /* Supporting Files */,
+			);
+			path = AMPhotoLibrary;
+			sourceTree = "<group>";
+		};
+		D564643F19D79FB3000F7B34 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				D564644019D79FB3000F7B34 /* Info.plist */,
+				D564644119D79FB3000F7B34 /* main.m */,
+				D564647A19D7B262000F7B34 /* AMPhotoLibrary_Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		D564646519D79FD0000F7B34 /* AMPhotoLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				D564647019D7A413000F7B34 /* AMPhotoManager.h */,
+				D564646619D79FF7000F7B34 /* AMPhotoLibrary.h */,
+				D564646719D79FF7000F7B34 /* AMPhotoLibrary.m */,
+				D564646D19D7A3FD000F7B34 /* AMALAssetsLibrary.h */,
+				D564646E19D7A3FD000F7B34 /* AMALAssetsLibrary.m */,
+				D564648419D7DD22000F7B34 /* AMPHPhotoLibrary.h */,
+				D564648519D7DD22000F7B34 /* AMPHPhotoLibrary.m */,
+				D564647419D7AB2B000F7B34 /* AMPhotoAlbum.h */,
+				D564647519D7AB2B000F7B34 /* AMPhotoAlbum.m */,
+				D535FEDF19D80B3500BC1375 /* AMPhotoAsset.h */,
+				D535FEE019D80B3500BC1375 /* AMPhotoAsset.m */,
+			);
+			name = AMPhotoLibrary;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D564643B19D79FB3000F7B34 /* AMPhotoLibrary */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D564645F19D79FB3000F7B34 /* Build configuration list for PBXNativeTarget "AMPhotoLibrary" */;
+			buildPhases = (
+				D564643819D79FB3000F7B34 /* Sources */,
+				D564643919D79FB3000F7B34 /* Frameworks */,
+				D564643A19D79FB3000F7B34 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AMPhotoLibrary;
+			productName = AMPhotoLibrary;
+			productReference = D564643C19D79FB3000F7B34 /* AMPhotoLibrary.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D564643419D79FB3000F7B34 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+				ORGANIZATIONNAME = arcrain;
+				TargetAttributes = {
+					D564643B19D79FB3000F7B34 = {
+						CreatedOnToolsVersion = 6.0.1;
+					};
+				};
+			};
+			buildConfigurationList = D564643719D79FB3000F7B34 /* Build configuration list for PBXProject "AMPhotoLibrary" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D564643319D79FB3000F7B34;
+			productRefGroup = D564643D19D79FB3000F7B34 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D564643B19D79FB3000F7B34 /* AMPhotoLibrary */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D564643A19D79FB3000F7B34 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D564645019D79FB3000F7B34 /* LaunchScreen.xib in Resources */,
+				D564644D19D79FB3000F7B34 /* Images.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D564643819D79FB3000F7B34 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D564646819D79FF7000F7B34 /* AMPhotoLibrary.m in Sources */,
+				D535FEDB19D8079800BC1375 /* PhotoAlbumViewController.m in Sources */,
+				D535FEDE19D8091700BC1375 /* PhotoAssetsViewController.m in Sources */,
+				D564647619D7AB2B000F7B34 /* AMPhotoAlbum.m in Sources */,
+				D564644519D79FB3000F7B34 /* AppDelegate.m in Sources */,
+				D535FEE119D80B3500BC1375 /* AMPhotoAsset.m in Sources */,
+				D564646F19D7A3FD000F7B34 /* AMALAssetsLibrary.m in Sources */,
+				D564644219D79FB3000F7B34 /* main.m in Sources */,
+				D57A210E19D93C2D009DFDD9 /* PhotoDetailViewController.m in Sources */,
+				D564648619D7DD22000F7B34 /* AMPHPhotoLibrary.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		D564644E19D79FB3000F7B34 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D564644F19D79FB3000F7B34 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		D564645D19D79FB3000F7B34 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = AMPhotoLibrary/AMPhotoLibrary_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		D564645E19D79FB3000F7B34 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = AMPhotoLibrary/AMPhotoLibrary_Prefix.pch;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D564646019D79FB3000F7B34 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = AMPhotoLibrary/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		D564646119D79FB3000F7B34 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = AMPhotoLibrary/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D564643719D79FB3000F7B34 /* Build configuration list for PBXProject "AMPhotoLibrary" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D564645D19D79FB3000F7B34 /* Debug */,
+				D564645E19D79FB3000F7B34 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D564645F19D79FB3000F7B34 /* Build configuration list for PBXNativeTarget "AMPhotoLibrary" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D564646019D79FB3000F7B34 /* Debug */,
+				D564646119D79FB3000F7B34 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D564643419D79FB3000F7B34 /* Project object */;
+}
