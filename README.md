@@ -9,13 +9,12 @@ Works on iOS 4.0+
 ## Including 'AMPhotoLibrary' Directly Into Your Project
 
 Compiler required: XCode 6
-
-1) Copy folder 'AMPhotoLibrary' to your project folder;
-2) Including files directly in XCode;
-3) Add system frameworks and config status: 
-	Photo.framework -> Optional, 
-	AssetsLibrary.framework -> Required.
-4) Copy defined marco in 'AMPhotoLibrary_Prefix.pch' to your .pch file
+<br/>1) Copy folder 'AMPhotoLibrary' to your project folder;
+<br/>2) Including files directly in XCode;
+<br/>3) Add system frameworks and config status: 
+<br/>        Photo.framework -> Optional
+<br/>        AssetsLibrary.framework -> Required
+<br/>4) Copy defined marco in 'AMPhotoLibrary_Prefix.pch' to your .pch file
 
 ## Licence
 
