@@ -11,11 +11,10 @@ Works on iOS 4.0+
 Compiler required: XCode 6
 
 1) Copy folder 'AMPhotoLibrary' to your project folder;
-
 2) Including files directly in XCode;
-
-3) Add system frameworks and config status: Photo.framework -> Optional, AssetsLibrary.framework -> Required
-
+3) Add system frameworks and config status: 
+	Photo.framework -> Optional, 
+	AssetsLibrary.framework -> Required.
 4) Copy defined marco in 'AMPhotoLibrary_Prefix.pch' to your .pch file
 
 ## Licence
