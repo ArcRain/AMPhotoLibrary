@@ -4,7 +4,7 @@
 
 AMPhotoLibrary used for working with the photo and video assets. By providing simple and unified interface, you can retrieve assets for display and playback, or work with albums for import and export.
 
-Works on iOS 4.0+
+Works on iOS 5.0+
 
 ## Including 'AMPhotoLibrary' Directly Into Your Project
 
