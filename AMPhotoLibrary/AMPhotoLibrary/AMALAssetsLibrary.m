@@ -47,7 +47,7 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
     [_assetsLibrary addAssetsGroupAlbumWithName:title resultBlock:^(ALAssetsGroup *group) {
         notifyResult(nil != group, nil);
     } failureBlock:^(NSError *error) {
-        notifyResult(NO, error);        
+        notifyResult(NO, error);
     }];
 }
 
@@ -60,7 +60,9 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
             *stop = YES;
         }
     } resultBlock:^(BOOL success, NSError *error) {
-        resultBlock(foundAlbum, error);
+        if (resultBlock) {
+            resultBlock(foundAlbum, error);
+        }
     }];
 }
 
@@ -107,7 +109,10 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
 
 - (void)addAsset:(AMPhotoAsset *)asset toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
-    resultBlock([[photoAlbum asALAssetsGroup] addAsset:[asset asALAsset]], nil);
+    BOOL hasAdded = [[photoAlbum asALAssetsGroup] addAsset:[asset asALAsset]];
+    if (resultBlock) {
+        resultBlock(hasAdded, nil);
+    }
 }
 
 - (void)writeImageToSavedPhotosAlbum:(UIImage *)image resultBlock:(AMPhotoManagerResultBlock)resultBlock

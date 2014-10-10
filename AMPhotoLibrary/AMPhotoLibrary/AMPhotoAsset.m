@@ -27,6 +27,7 @@
     
     BOOL _hasGotMetaData;
     NSDictionary *_metaData;
+    NSURL *_fileURL;
 }
 @end
 
@@ -104,11 +105,13 @@
             [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
                 _metaData = (NSMutableDictionary *)CFBridgingRelease(CGImageSourceCopyProperties(source, NULL));
+                _fileURL = info[@"PHImageFileURLKey"];
                 CFRelease(source);
             }];
         }
         else {
             _metaData = _alAsset.defaultRepresentation.metadata;
+            _fileURL = [_alAsset valueForProperty: ALAssetPropertyAssetURL];
         }
     }
     return _metaData;
@@ -132,6 +135,14 @@
     else {
         return [_alAsset valueForProperty: ALAssetPropertyLocation];
     }
+}
+
+- (NSURL *)assetURL
+{
+    if (!_hasGotMetaData) {
+        [self metadata];
+    }
+    return _fileURL;
 }
 
 - (UIImage *)thumbnail

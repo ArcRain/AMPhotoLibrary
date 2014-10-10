@@ -14,6 +14,7 @@
 @property (nonatomic, readonly, strong) NSDictionary *metadata;
 @property (nonatomic, readonly, strong) NSDate *creationDate;
 @property (nonatomic, readonly, strong) CLLocation *location;
+@property (nonatomic, readonly, strong) NSURL *assetURL;
 
 @property (nonatomic, readonly, strong) UIImage *thumbnail;
 @property (nonatomic, readonly, strong) UIImage *aspectRatioThumbnail;

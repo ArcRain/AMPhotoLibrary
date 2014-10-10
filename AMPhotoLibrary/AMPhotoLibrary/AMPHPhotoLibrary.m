@@ -29,7 +29,9 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle: title];
     } completionHandler:^(BOOL success, NSError *error) {
-        resultBlock(success, error);
+        if (resultBlock) {
+            resultBlock(success, error);
+        }
     }];
 }
 
@@ -42,7 +44,9 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
             *stop = YES;
         }
     } resultBlock:^(BOOL success, NSError *error) {
-        resultBlock(foundAlbum, error);
+        if (resultBlock) {
+            resultBlock(foundAlbum, error);
+        }
     }];
 }
 
