@@ -104,11 +104,11 @@
             request.synchronous = YES;
             
             [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
+                _metaData = (NSMutableDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
+                CFRelease(source);
                 _fileURL = info[@"PHImageFileURLKey"];
                 _orientation = orientation;
-                CIImage *image = [CIImage imageWithContentsOfURL:_fileURL];
-                _metaData = [NSDictionary dictionaryWithDictionary:image.properties];
-                
             }];
         }
         else {

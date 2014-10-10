@@ -16,12 +16,16 @@
 @property (nonatomic, readonly, strong) CLLocation *location;
 @property (nonatomic, readonly, strong) NSURL *assetURL;
 
+/*
+ UIImageOrientation for fullResolutionImage
+ */
+@property (nonatomic, readonly, assign) UIImageOrientation orientation;
+
 @property (nonatomic, readonly, strong) UIImage *thumbnail;
 @property (nonatomic, readonly, strong) UIImage *aspectRatioThumbnail;
 @property (nonatomic, readonly, strong) UIImage *fullScreenImage;
 @property (nonatomic, readonly, strong) UIImage *fullResolutionImage;
 
-@property (nonatomic, readonly, assign) UIImageOrientation orientation;
 + (AMPhotoAsset *)photoAssetWithALAsset:(ALAsset *)asset;
 + (AMPhotoAsset *)photoAssetWithPHAsset:(PHAsset *)asset;
 
