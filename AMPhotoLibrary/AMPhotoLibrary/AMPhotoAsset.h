@@ -21,6 +21,7 @@
 @property (nonatomic, readonly, strong) UIImage *fullScreenImage;
 @property (nonatomic, readonly, strong) UIImage *fullResolutionImage;
 
+@property (nonatomic, readonly, assign) UIImageOrientation orientation;
 + (AMPhotoAsset *)photoAssetWithALAsset:(ALAsset *)asset;
 + (AMPhotoAsset *)photoAssetWithPHAsset:(PHAsset *)asset;
 

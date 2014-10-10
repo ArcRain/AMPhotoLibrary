@@ -61,7 +61,7 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     __block BOOL isStop = NO;
     do {
         PHFetchResult *cameraRollResult = [PHAsset fetchAssetsWithOptions: nil];
-        PHAssetCollection *cameraRollCollection = [PHAssetCollection transientAssetCollectionWithAssetFetchResult: cameraRollResult title:@"Camera Roll"];
+        PHAssetCollection *cameraRollCollection = [PHAssetCollection transientAssetCollectionWithAssetFetchResult: cameraRollResult title:NSLocalizedString(@"Camera Roll", nil)];
         if (enumeratorBlock) {
             AMPhotoAlbum *photoAlbum = [AMPhotoAlbum photoAlbumWithPHAssetCollection: cameraRollCollection];
             enumeratorBlock(photoAlbum, &isStop);
