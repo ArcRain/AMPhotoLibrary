@@ -13,6 +13,8 @@
     ALAsset *_alAsset;
     PHAsset *_phAsset;
     
+    AMPhotoAssetMediaType _mediaType;
+    
     BOOL _hasGotThumbnail;
     UIImage *_thumbnailImage;
     
@@ -29,6 +31,8 @@
     NSDictionary *_metaData;
     NSURL *_fileURL;
     UIImageOrientation _orientation;
+    
+    NSTimeInterval _duration;
 }
 @end
 
@@ -80,6 +84,43 @@
     _hasGotAspectRatioThumbnail = NO;
     _hasGotFullScreenImage = NO;
     _hasGotFullResolutionImage = NO;
+    _duration = 0.f;
+    
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        switch (_phAsset.mediaType) {
+            case PHAssetMediaTypeImage:
+                _mediaType = AMPhotoAssetMediaTypeImage;
+                break;
+            case PHAssetMediaTypeVideo:
+                _mediaType = AMPhotoAssetMediaTypeVideo;
+                _duration = _phAsset.duration;
+                break;
+            case PHAssetMediaTypeAudio:
+                _mediaType = AMPhotoAssetMediaTypeAudio;
+                break;
+            default:
+                _mediaType = AMPhotoAssetMediaTypeUnknown;
+                break;
+        }
+    }
+    else {
+        NSString *mediaType = [_alAsset valueForProperty:ALAssetPropertyType];
+        if ([mediaType isEqualToString:ALAssetTypePhoto]) {
+            _mediaType = AMPhotoAssetMediaTypeImage;
+        }
+        else if ([mediaType isEqualToString:ALAssetTypeVideo]) {
+            _mediaType = AMPhotoAssetMediaTypeVideo;
+            _duration = [[_alAsset valueForProperty:ALAssetPropertyDuration] doubleValue];
+        }
+        else {
+            _mediaType = AMPhotoAssetMediaTypeUnknown;
+        }
+    }
+}
+
+- (AMPhotoAssetMediaType)mediaType
+{
+    return _mediaType;
 }
 
 - (CGSize)dimensions
@@ -154,7 +195,6 @@
         [self metadata];
     }
     return _orientation;
-    
 }
 
 - (UIImage *)thumbnail
@@ -216,6 +256,9 @@
 
 - (UIImage *)fullScreenImage
 {
+    if (AMPhotoAssetMediaTypeImage != _mediaType) {
+        return nil;
+    }
     if (!_hasGotFullScreenImage) {
         _hasGotFullScreenImage = YES;
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
@@ -243,6 +286,9 @@
 
 - (UIImage *)fullResolutionImage
 {
+    if (AMPhotoAssetMediaTypeImage != _mediaType) {
+        return nil;
+    }
     if (!_hasGotFullResolutionImage) {
         _hasGotFullResolutionImage = YES;
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
@@ -262,6 +308,11 @@
         }
     }
     return _fullResolutionImage;
+}
+
+- (NSTimeInterval)duration
+{
+    return _duration;
 }
 
 @end
