@@ -139,15 +139,17 @@
         _hasGotMetaData = YES;
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
-            request.resizeMode = PHImageRequestOptionsResizeModeNone;
-            request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
             request.version = PHImageRequestOptionsVersionCurrent;
+            request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+            request.resizeMode = PHImageRequestOptionsResizeModeNone;
             request.synchronous = YES;
             
             [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
-                _metaData = (NSMutableDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
-                CFRelease(source);
+                if (PHAssetMediaTypeImage == _mediaType) {
+                    CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
+                    _metaData = (NSMutableDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
+                    CFRelease(source);
+                }
                 _fileURL = info[@"PHImageFileURLKey"];
                 _orientation = orientation;
             }];

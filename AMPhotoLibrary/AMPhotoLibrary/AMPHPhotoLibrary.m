@@ -197,4 +197,15 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
+- (void)writeVideoAtPathToSavedPhotosAlbum:(NSString *)filePath resultBlock:(AMPhotoManagerResultBlock)resultBlock
+{
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:[NSURL fileURLWithPath:filePath]];
+    } completionHandler:^(BOOL success, NSError *error) {
+        if (resultBlock) {
+            resultBlock(success, error);
+        }
+    }];
+}
+
 @end

@@ -99,6 +99,7 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
     [[photoAlbum asALAssetsGroup] enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
         if (nil == result) {
             notifyResult(YES, nil);
+            return;
         }
         if (enumeratorBlock) {
             AMPhotoAsset *asset = [AMPhotoAsset photoAssetWithALAsset: result];
@@ -182,6 +183,15 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
         } failureBlock:^(NSError *error) {
             notifyResult(NO, error);
         }];
+    }];
+}
+
+- (void)writeVideoAtPathToSavedPhotosAlbum:(NSString *)filePath resultBlock:(AMPhotoManagerResultBlock)resultBlock
+{
+    [_assetsLibrary writeVideoAtPathToSavedPhotosAlbum:[NSURL fileURLWithPath:filePath] completionBlock:^(NSURL *assetURL, NSError *error) {
+        if (resultBlock) {
+            resultBlock(nil != assetURL, error);
+        }
     }];
 }
 

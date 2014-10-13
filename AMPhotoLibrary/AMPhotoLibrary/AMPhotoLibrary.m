@@ -87,4 +87,9 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
     [_photoManager writeImageData:imageData metadata:metadata toAlbum:photoAlbum resultBlock:resultBlock];
 }
 
+- (void)writeVideoAtPathToSavedPhotosAlbum:(NSString *)filePath resultBlock:(AMPhotoManagerResultBlock)resultBlock
+{
+    [_photoManager writeVideoAtPathToSavedPhotosAlbum:filePath resultBlock:resultBlock];
+}
+
 @end
