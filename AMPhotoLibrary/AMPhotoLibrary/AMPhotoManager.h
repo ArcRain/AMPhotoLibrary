@@ -15,10 +15,24 @@ typedef void (^AMPhotoManagerCheckBlock)(AMPhotoAlbum *album, NSError *error);
 typedef void (^AMPhotoManagerAlbumEnumeratorBlock)(AMPhotoAlbum *album, BOOL *stop);
 typedef void (^AMPhotoManagerAssetEnumeratorBlock)(AMPhotoAsset *asset, NSUInteger index, BOOL *stop);
 
+typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
+    AMAuthorizationStatusNotDetermined = 0, // User has not yet made a choice with regards to this application
+    AMAuthorizationStatusRestricted,        // This application is not authorized to access photo data.
+    // The user cannot change this application’s status, possibly due to active restrictions
+    //   such as parental controls being in place.
+    AMAuthorizationStatusDenied,            // User has explicitly denied this application access to photos data.
+    AMAuthorizationStatusAuthorized         // User has authorized this application to access photos data.
+};
+
 #pragma mark - AMPhotoManager
 @protocol AMPhotoManager <NSObject>
 
 @required
+
+//AuthorizationStatus check
++ (AMAuthorizationStatus)authorizationStatus;
++ (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler;
+
 - (void)createAlbum:(NSString *)title resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 - (void)checkAlbum:(NSString *)title resultBlock:(AMPhotoManagerCheckBlock)resultBlock;
 
