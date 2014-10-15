@@ -27,11 +27,63 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
     return s_sharedPhotoManager;
 }
 
++ (AMAuthorizationStatus)authorizationStatusFromALAuthorizationStatus:(ALAuthorizationStatus)authorizationStatus
+{
+    AMAuthorizationStatus authStatus = AMAuthorizationStatusNotDetermined;
+    switch (authorizationStatus) {
+        case ALAuthorizationStatusRestricted:
+            authStatus = AMAuthorizationStatusRestricted;
+            break;
+        case ALAuthorizationStatusDenied:
+            authStatus = AMAuthorizationStatusDenied;
+            break;
+        case ALAuthorizationStatusAuthorized:
+            authStatus = AMAuthorizationStatusAuthorized;
+            break;
+        case ALAuthorizationStatusNotDetermined:
+        default:
+            authStatus = AMAuthorizationStatusNotDetermined;
+            break;
+    }
+    return authStatus;
+}
+
++ (AMAuthorizationStatus)authorizationStatus
+{
+    return [[self class] authorizationStatusFromALAuthorizationStatus:[ALAssetsLibrary authorizationStatus]];
+}
+
++ (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler
+{
+    @autoreleasepool {
+        ALAssetsLibrary *testLibrary = [ALAssetsLibrary new];
+        [testLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+            if (nil == group) {
+                if (handler) {
+                    handler([[self class] authorizationStatus]);
+                }
+                return;
+            }
+            *stop = YES;
+        } failureBlock:^(NSError *error) {
+            if (handler) {
+                handler([[self class] authorizationStatus]);
+            }
+        }];
+    }
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (instancetype)init
 {
     self = [super init];
     if (self) {
         _assetsLibrary = [ALAssetsLibrary new];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(assetsLibraryDidChange:) name:ALAssetsLibraryChangedNotification object:nil];
     }
     return self;
 }
@@ -193,6 +245,11 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
             resultBlock(nil != assetURL, error);
         }
     }];
+}
+
+- (void)assetsLibraryDidChange:(NSNotification *)note
+{
+    //TODO:
 }
 
 @end

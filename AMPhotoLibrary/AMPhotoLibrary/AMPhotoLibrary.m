@@ -42,84 +42,23 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
     return self;
 }
 
-+ (AMAuthorizationStatus)authorizationStatusFromALAuthorizationStatus:(ALAuthorizationStatus)authorizationStatus
-{
-    AMAuthorizationStatus authStatus = AMAuthorizationStatusNotDetermined;
-    switch (authorizationStatus) {
-        case ALAuthorizationStatusRestricted:
-            authStatus = AMAuthorizationStatusRestricted;
-            break;
-        case ALAuthorizationStatusDenied:
-            authStatus = AMAuthorizationStatusDenied;
-            break;
-        case ALAuthorizationStatusAuthorized:
-            authStatus = AMAuthorizationStatusAuthorized;
-            break;
-        case ALAuthorizationStatusNotDetermined:
-        default:
-            authStatus = AMAuthorizationStatusNotDetermined;
-            break;
-    }
-    return authStatus;
-}
-
-+ (AMAuthorizationStatus)authorizationStatusFromPHAuthorizationStatus:(PHAuthorizationStatus)authorizationStatus
-{
-    AMAuthorizationStatus authStatus = AMAuthorizationStatusNotDetermined;
-    switch (authorizationStatus) {
-        case PHAuthorizationStatusRestricted:
-            authStatus = AMAuthorizationStatusRestricted;
-            break;
-        case PHAuthorizationStatusDenied:
-            authStatus = AMAuthorizationStatusDenied;
-            break;
-        case PHAuthorizationStatusAuthorized:
-            authStatus = AMAuthorizationStatusAuthorized;
-            break;
-        case PHAuthorizationStatusNotDetermined:
-        default:
-            authStatus = AMAuthorizationStatusNotDetermined;
-            break;
-    }
-    return authStatus;
-}
-
 + (AMAuthorizationStatus)authorizationStatus
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        return [[self class] authorizationStatusFromPHAuthorizationStatus:[PHPhotoLibrary authorizationStatus]];
+        return [AMPHPhotoLibrary authorizationStatus];
     }
     else {
-        return [[self class] authorizationStatusFromALAuthorizationStatus:[ALAssetsLibrary authorizationStatus]];
+        return [AMALAssetsLibrary authorizationStatus];
     }
 }
 
 + (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler
 {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-            if (handler) {
-                handler([[self class] authorizationStatusFromPHAuthorizationStatus: status]);
-            }
-        }];
+        [AMPHPhotoLibrary requestAuthorization:handler];
     }
     else {
-        @autoreleasepool {
-            ALAssetsLibrary *testLibrary = [ALAssetsLibrary new];
-            [testLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-                if (nil == group) {
-                    if (handler) {
-                        handler([[self class] authorizationStatus]);
-                    }
-                    return;
-                }
-                *stop = YES;
-            } failureBlock:^(NSError *error) {
-                if (handler) {
-                    handler([[self class] authorizationStatus]);
-                }
-            }];
-        }
+        [AMALAssetsLibrary requestAuthorization:handler];
     }
 }
 

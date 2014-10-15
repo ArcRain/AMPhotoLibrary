@@ -8,7 +8,7 @@
 
 #import "AMPHPhotoLibrary.h"
 
-@interface AMPHPhotoLibrary ()
+@interface AMPHPhotoLibrary () <PHPhotoLibraryChangeObserver>
 
 @end
 
@@ -22,6 +22,50 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
         s_sharedPhotoManager = [AMPHPhotoLibrary new];
     });
     return s_sharedPhotoManager;
+}
+
++ (AMAuthorizationStatus)authorizationStatusFromPHAuthorizationStatus:(PHAuthorizationStatus)authorizationStatus
+{
+    AMAuthorizationStatus authStatus = AMAuthorizationStatusNotDetermined;
+    switch (authorizationStatus) {
+        case PHAuthorizationStatusRestricted:
+            authStatus = AMAuthorizationStatusRestricted;
+            break;
+        case PHAuthorizationStatusDenied:
+            authStatus = AMAuthorizationStatusDenied;
+            break;
+        case PHAuthorizationStatusAuthorized:
+            authStatus = AMAuthorizationStatusAuthorized;
+            break;
+        case PHAuthorizationStatusNotDetermined:
+        default:
+            authStatus = AMAuthorizationStatusNotDetermined;
+            break;
+    }
+    return authStatus;
+}
+
++ (AMAuthorizationStatus)authorizationStatus
+{
+    return [[self class] authorizationStatusFromPHAuthorizationStatus:[PHPhotoLibrary authorizationStatus]];
+}
+
++ (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler
+{
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+        if (handler) {
+            handler([[self class] authorizationStatusFromPHAuthorizationStatus: status]);
+        }
+    }];
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
+    }
+    return self;
 }
 
 - (void)createAlbum:(NSString *)title resultBlock:(AMPhotoManagerResultBlock)resultBlock
@@ -206,6 +250,12 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
             resultBlock(success, error);
         }
     }];
+}
+
+#pragma mark - PHPhotoLibraryChangeObserver
+- (void)photoLibraryDidChange:(PHChange *)changeInstance
+{
+    //TODO:
 }
 
 @end
