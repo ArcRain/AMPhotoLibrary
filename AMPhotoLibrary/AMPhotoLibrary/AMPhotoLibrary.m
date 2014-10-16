@@ -13,7 +13,6 @@
 @interface AMPhotoLibrary ()
 {
     id<AMPhotoManager> _photoManager;
-    NSMutableSet *_changeObservers;
 }
 @end
 
@@ -49,12 +48,6 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
     }
 }
 
-- (void)uninit
-{
-    [_changeObservers removeAllObjects];
-    _changeObservers = nil;
-}
-
 - (instancetype)init
 {
     self = [super init];
@@ -69,22 +62,14 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
     return self;
 }
 
-- (NSMutableSet *)changeObservers
-{
-    if (nil == _changeObservers) {
-        _changeObservers = [NSMutableSet new];
-    }
-    return _changeObservers;
-}
-
 - (void)registerChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer
 {
-    [self.changeObservers addObject: observer];
+    [_photoManager registerChangeObserver: observer];
 }
 
 - (void)unregisterChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer
 {
-    [self.changeObservers removeObject: observer];
+    [_photoManager unregisterChangeObserver: observer];
 }
 
 - (void)createAlbum:(NSString *)title resultBlock:(AMPhotoManagerResultBlock)resultBlock

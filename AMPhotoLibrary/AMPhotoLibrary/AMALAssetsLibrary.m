@@ -12,6 +12,7 @@
 @interface AMALAssetsLibrary ()
 {
     ALAssetsLibrary *_assetsLibrary;
+    NSMutableSet *_changeObservers;
 }
 @end
 
@@ -76,6 +77,8 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [_changeObservers removeAllObjects];
+    _changeObservers = nil;
 }
 
 - (instancetype)init
@@ -86,6 +89,24 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(assetsLibraryDidChange:) name:ALAssetsLibraryChangedNotification object:nil];
     }
     return self;
+}
+
+- (NSMutableSet *)changeObservers
+{
+    if (nil == _changeObservers) {
+        _changeObservers = [NSMutableSet new];
+    }
+    return _changeObservers;
+}
+
+- (void)registerChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer
+{
+    [self.changeObservers addObject: observer];
+}
+
+- (void)unregisterChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer
+{
+    [self.changeObservers removeObject: observer];
 }
 
 - (void)createAlbum:(NSString *)title resultBlock:(AMPhotoManagerResultBlock)resultBlock

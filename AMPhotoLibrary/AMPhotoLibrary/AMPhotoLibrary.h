@@ -13,10 +13,6 @@
 
 #import "AMPhotoManager.h"
 
-@protocol AMPhotoLibraryChangeObserver <NSObject>
-//TODO
-@end
-
 @interface AMPhotoLibrary : NSObject <AMPhotoManager>
 
 + (instancetype)sharedPhotoLibrary;

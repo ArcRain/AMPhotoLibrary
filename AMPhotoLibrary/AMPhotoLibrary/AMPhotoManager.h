@@ -24,6 +24,10 @@ typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
     AMAuthorizationStatusAuthorized         // User has authorized this application to access photos data.
 };
 
+@protocol AMPhotoLibraryChangeObserver <NSObject>
+//TODO
+@end
+
 #pragma mark - AMPhotoManager
 @protocol AMPhotoManager <NSObject>
 
@@ -32,6 +36,9 @@ typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
 //AuthorizationStatus check
 + (AMAuthorizationStatus)authorizationStatus;
 + (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler;
+
+- (void)registerChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer;
+- (void)unregisterChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer;
 
 - (void)createAlbum:(NSString *)title resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 - (void)checkAlbum:(NSString *)title resultBlock:(AMPhotoManagerCheckBlock)resultBlock;

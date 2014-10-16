@@ -9,7 +9,9 @@
 #import "AMPHPhotoLibrary.h"
 
 @interface AMPHPhotoLibrary () <PHPhotoLibraryChangeObserver>
-
+{
+    NSMutableSet *_changeObservers;
+}
 @end
 
 @implementation AMPHPhotoLibrary
@@ -62,6 +64,8 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
 - (void)dealloc
 {
     [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
+    [_changeObservers removeAllObjects];
+    _changeObservers = nil;
 }
 
 - (instancetype)init
@@ -71,6 +75,24 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
         [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
     }
     return self;
+}
+
+- (NSMutableSet *)changeObservers
+{
+    if (nil == _changeObservers) {
+        _changeObservers = [NSMutableSet new];
+    }
+    return _changeObservers;
+}
+
+- (void)registerChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer
+{
+    [self.changeObservers addObject: observer];
+}
+
+- (void)unregisterChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer
+{
+    [self.changeObservers removeObject: observer];
 }
 
 - (void)createAlbum:(NSString *)title resultBlock:(AMPhotoManagerResultBlock)resultBlock
