@@ -59,6 +59,11 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
+- (void)dealloc
+{
+    [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
+}
+
 - (instancetype)init
 {
     self = [super init];

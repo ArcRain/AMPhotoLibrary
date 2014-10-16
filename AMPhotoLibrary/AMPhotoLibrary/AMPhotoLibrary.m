@@ -13,6 +13,7 @@
 @interface AMPhotoLibrary ()
 {
     id<AMPhotoManager> _photoManager;
+    NSMutableSet *_changeObservers;
 }
 @end
 
@@ -26,20 +27,6 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
         s_sharedPhotoLibrary = [AMPhotoLibrary new];
     });
     return s_sharedPhotoLibrary;
-}
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-            _photoManager = [AMPHPhotoLibrary sharedPhotoManager];
-        }
-        else {
-            _photoManager = [AMALAssetsLibrary sharedPhotoManager];
-        }
-    }
-    return self;
 }
 
 + (AMAuthorizationStatus)authorizationStatus
@@ -60,6 +47,44 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
     else {
         [AMALAssetsLibrary requestAuthorization:handler];
     }
+}
+
+- (void)uninit
+{
+    [_changeObservers removeAllObjects];
+    _changeObservers = nil;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+            _photoManager = [AMPHPhotoLibrary sharedPhotoManager];
+        }
+        else {
+            _photoManager = [AMALAssetsLibrary sharedPhotoManager];
+        }
+    }
+    return self;
+}
+
+- (NSMutableSet *)changeObservers
+{
+    if (nil == _changeObservers) {
+        _changeObservers = [NSMutableSet new];
+    }
+    return _changeObservers;
+}
+
+- (void)registerChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer
+{
+    [self.changeObservers addObject: observer];
+}
+
+- (void)unregisterChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer
+{
+    [self.changeObservers removeObject: observer];
 }
 
 - (void)createAlbum:(NSString *)title resultBlock:(AMPhotoManagerResultBlock)resultBlock
