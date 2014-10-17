@@ -29,7 +29,7 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
 
 @end
 
-@interface PhotoAlbumViewController ()
+@interface PhotoAlbumViewController () <AMPhotoLibraryChangeObserver>
 {
     NSMutableArray *_photoAlbums;
 }
@@ -51,6 +51,8 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
     self.tableView.tableHeaderView = nil;
     self.tableView.tableFooterView = [UIView new];
     [self.tableView registerClass:[PhotoAlbumViewCell class] forCellReuseIdentifier: PhotoAlbumViewCellReuseIdentifier];
+    
+    [[AMPhotoLibrary sharedPhotoLibrary] registerChangeObserver: self];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -114,6 +116,15 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
     PhotoAssetsViewController *viewController = [[PhotoAssetsViewController alloc] initWithCollectionViewLayout:flowLayout];
     viewController.photoAlbum = albumData;
     [self.navigationController pushViewController: viewController animated:YES];
+}
+
+#pragma mark - AMPhotoLibraryChangeObserver
+- (void)photoLibraryDidChange:(AMPhotoChange *)changeInstance
+{
+    [_photoAlbums enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        AMPhotoAlbum *photoAlbum = (AMPhotoAlbum *)obj;
+        AMPhotoChangeDetails* changeDetails = [changeInstance changeDetailsForObject:[photoAlbum asPHAssetCollection]];
+    }];
 }
 
 @end

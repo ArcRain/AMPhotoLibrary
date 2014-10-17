@@ -8,6 +8,7 @@
 
 #import "AMALAssetsLibrary.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "AMPhotoChange_Private.h"
 
 @interface AMALAssetsLibrary ()
 {
@@ -268,9 +269,26 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
+/*
+ In iOS 4.0, the notification’s object is nil. In iOS 4.1 and later, the notification object is the library object that posted the notification.
+ In iOS 6.0 and later, the user information dictionary describes what changed:
+ If the user information dictionary is nil, reload all assets and asset groups.
+ If the user information dictionary an empty dictionary, there is no need to reload assets and asset groups.
+ If the user information dictionary is not empty, reload the effected assets and asset groups. For the keys used, see Notification Keys.
+ 
+ This notification is sent on an arbitrary thread.
+ */
 - (void)assetsLibraryDidChange:(NSNotification *)note
 {
-    //TODO:
+    AMPhotoChange *photoChange = nil;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0")) {
+        photoChange = [AMPhotoChange changeWithALChange: note.userInfo];
+    }
+    
+    [_changeObservers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+        id<AMPhotoLibraryChangeObserver> changeObserver = obj;
+        [changeObserver photoLibraryDidChange: photoChange];
+    }];
 }
 
 @end

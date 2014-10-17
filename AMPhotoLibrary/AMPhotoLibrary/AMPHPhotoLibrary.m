@@ -7,6 +7,8 @@
 //
 
 #import "AMPHPhotoLibrary.h"
+#import <Photos/Photos.h>
+#import "AMPhotoChange_Private.h"
 
 @interface AMPHPhotoLibrary () <PHPhotoLibraryChangeObserver>
 {
@@ -282,7 +284,11 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
 #pragma mark - PHPhotoLibraryChangeObserver
 - (void)photoLibraryDidChange:(PHChange *)changeInstance
 {
-    //TODO:
+    AMPhotoChange *photoChange = [AMPhotoChange changeWithPHChange: changeInstance];
+    [_changeObservers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+        id<AMPhotoLibraryChangeObserver> changeObserver = obj;
+        [changeObserver photoLibraryDidChange: photoChange];
+    }];
 }
 
 @end

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "AMPhotoAlbum.h"
 #import "AMPhotoAsset.h"
+#import "AMPhotoChange.h"
 
 typedef void (^AMPhotoManagerResultBlock)(BOOL success, NSError *error);
 typedef void (^AMPhotoManagerCheckBlock)(AMPhotoAlbum *album, NSError *error);
@@ -24,8 +25,12 @@ typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
     AMAuthorizationStatusAuthorized         // User has authorized this application to access photos data.
 };
 
+#pragma mark - AMPhotoLibraryChangeObserver
 @protocol AMPhotoLibraryChangeObserver <NSObject>
-//TODO
+
+@optional
+- (void)photoLibraryDidChange:(AMPhotoChange *)changeInstance;
+
 @end
 
 #pragma mark - AMPhotoManager
