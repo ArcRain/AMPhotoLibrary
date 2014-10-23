@@ -46,17 +46,27 @@
     return self;
 }
 
-- (AMPhotoChangeDetails *)changeDetailsForObject:(NSObject *)object
+- (AMPhotoChangeDetails *)changeDetailsForObject:(id)object
 {
     AMPhotoChangeDetails *changeDetails = nil;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        if ([object isKindOfClass:[PHObject class]]) {
-            changeDetails = [AMPhotoChangeDetails changeDetailsWithPHChange: _changeInstance forPHObject: (PHObject *)object];
+        if ([object isKindOfClass:[AMPhotoAsset class]]) {
+            AMPhotoAsset *asset = (AMPhotoAsset *)object;
+            changeDetails = [AMPhotoChangeDetails changeDetailsWithPHObjectChangeDetails: [_changeInstance changeDetailsForObject:[asset asPHAsset]]];
+        }
+        else if ([object isKindOfClass:[AMPhotoAlbum class]]) {
+            AMPhotoAlbum *album = (AMPhotoAlbum *)object;
+            changeDetails = [AMPhotoChangeDetails changeDetailsWithPHObjectChangeDetails: [_changeInstance changeDetailsForObject:[album asPHAssetCollection]]];
         }
     }
     else {
-        if ( ([object isKindOfClass:[ALAssetsGroup class]]) || ([object isKindOfClass:[ALAsset class]]) ) {
-            changeDetails = [AMPhotoChangeDetails changeDetailsWithNotificationInfo:_noteUserInfo forObject: object];
+        if ([object isKindOfClass:[AMPhotoAsset class]]) {
+            AMPhotoAsset *asset = (AMPhotoAsset *)object;
+            changeDetails = [AMPhotoChangeDetails changeDetailsWithNotificationInfo: _noteUserInfo forObject:[asset asALAsset]];
+        }
+        else if ([object isKindOfClass:[AMPhotoAlbum class]]) {
+            AMPhotoAlbum *album = (AMPhotoAlbum *)object;
+            changeDetails = [AMPhotoChangeDetails changeDetailsWithNotificationInfo: _noteUserInfo forObject:[album asALAssetsGroup]];
         }
     }
     return changeDetails;
@@ -67,10 +77,9 @@
 #pragma mark - AMPhotoChangeDetails
 @interface AMPhotoChangeDetails ()
 {
-    __weak PHChange *_changeInstance;
-    PHObject *_phObject;
+    PHObjectChangeDetails *_changeDetails;
     
-    __weak NSDictionary *_userInfo;
+    NSDictionary *_userInfo;
     NSObject *_object;
 }
 @end
@@ -82,15 +91,15 @@
     if (nil == userInfo) {
         return nil;
     }
-    return [[self class] initWithNotificationInfo: userInfo forObject: object];
+    return [[[self class] alloc] initWithNotificationInfo: userInfo forObject: object];
 }
 
-+ (instancetype)changeDetailsWithPHChange:(PHChange *)changeInstance forPHObject:(PHObject *)phObject
++ (instancetype)changeDetailsWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails
 {
-    if ((nil == changeInstance) || (nil == phObject)) {
+    if (nil == changeDetails) {
         return nil;
     }
-    return [[self class] initWithPHChange: changeInstance forPHObject: phObject];
+    return [[[self class] alloc] initWithPHObjectChangeDetails: changeDetails];
 }
             
 - (instancetype)initWithNotificationInfo:(NSDictionary *)userInfo forObject:(NSObject *)object
@@ -103,14 +112,82 @@
     return self;
 }
 
-- (instancetype)initWithPHChange:(PHChange *)changeInstance forPHObject:(PHObject *)phObject
+- (instancetype)initWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails
 {
     self = [super init];
     if (self) {
-        _changeInstance = changeInstance;
-        _phObject = phObject;
+        _changeDetails = changeDetails;
     }
     return self;
+}
+
+- (id)objectBeforeChanges
+{
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        return _changeDetails.objectBeforeChanges;
+    }
+    else {
+        return _object;
+    }
+}
+
+- (id)objectAfterChanges
+{
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        return _changeDetails.objectAfterChanges;
+    }
+    else {
+        return nil;
+    }
+}
+
+- (BOOL)objectWasChanged
+{
+    __block BOOL wasChanged = NO;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        wasChanged = _changeDetails.assetContentChanged;
+    }
+    else {
+        if ([_object isKindOfClass:[ALAsset class]]) {
+            NSSet *updatedAssets = _userInfo[ALAssetLibraryUpdatedAssetsKey];
+            NSURL *objectURL = [((ALAsset *)_object) valueForProperty:ALAssetPropertyAssetURL];
+            [updatedAssets enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+                NSURL *assetURL = (NSURL *)obj;
+                wasChanged = [assetURL isEqual: objectURL];
+                *stop = wasChanged;
+            }];
+        }
+        else if ([_object isKindOfClass:[ALAssetsGroup class]]) {
+            NSSet *updatedAssetsGroups = _userInfo[ALAssetLibraryUpdatedAssetGroupsKey];
+            NSURL *objectURL = [((ALAssetsGroup *)_object) valueForProperty:ALAssetsGroupPropertyURL];
+            [updatedAssetsGroups enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+                NSURL *assetURL = (NSURL *)obj;
+                wasChanged = [assetURL isEqual: objectURL];
+                *stop = wasChanged;
+            }];
+        }
+    }
+    return wasChanged;
+}
+
+- (BOOL)objectWasDeleted
+{
+    __block BOOL wasDeleted = NO;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        wasDeleted = _changeDetails.objectWasDeleted;
+    }
+    else {
+        if ([_object isKindOfClass:[ALAssetsGroup class]]) {
+            NSSet *deletedAssetsGroups = _userInfo[ALAssetLibraryDeletedAssetGroupsKey];
+            NSURL *objectURL = [((ALAssetsGroup *)_object) valueForProperty:ALAssetsGroupPropertyURL];
+            [deletedAssetsGroups enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+                NSURL *assetURL = (NSURL *)obj;
+                wasDeleted = [assetURL isEqual: objectURL];
+                *stop = wasDeleted;
+            }];
+        }
+    }
+    return wasDeleted;
 }
 
 @end

@@ -20,6 +20,6 @@
 @interface AMPhotoChangeDetails (Private)
 
 + (instancetype)changeDetailsWithNotificationInfo:(NSDictionary *)userInfo forObject:(NSObject *)object;
-+ (instancetype)changeDetailsWithPHChange:(PHChange *)changeInstance forPHObject:(PHObject *)phObject;
++ (instancetype)changeDetailsWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails;
 
 @end

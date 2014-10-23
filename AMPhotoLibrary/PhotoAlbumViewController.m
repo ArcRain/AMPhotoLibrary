@@ -123,7 +123,17 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
 {
     [_photoAlbums enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         AMPhotoAlbum *photoAlbum = (AMPhotoAlbum *)obj;
-        AMPhotoChangeDetails* changeDetails = [changeInstance changeDetailsForObject:[photoAlbum asPHAssetCollection]];
+        AMPhotoChangeDetails* changeDetails = [changeInstance changeDetailsForObject:photoAlbum];
+        if (nil == changeDetails) {
+            return;
+        }
+        //For test
+        /*
+        id beforeObj = changeDetails.objectBeforeChanges;
+        id afterObj = changeDetails.objectAfterChanges;
+        BOOL wasDeleted = changeDetails.objectWasDeleted;
+        BOOL contentChanged = changeDetails.objectWasChanged;
+         */
     }];
 }
 
