@@ -26,10 +26,13 @@
     
     BOOL _hasGotFullResolutionImage;
     UIImage *_fullResolutionImage;
+    unsigned long long _fileSize;
     
     BOOL _hasGotMetaData;
-    NSDictionary *_metaData;
-    NSURL *_fileURL;
+    NSMutableDictionary *_metaData;
+    NSURL *_assetURL;
+    NSString *_UTI;
+    
     UIImageOrientation _orientation;
     
     NSTimeInterval _duration;
@@ -80,11 +83,13 @@
 
 - (void)commonInit
 {
+    _hasGotMetaData = NO;
     _hasGotThumbnail = NO;
     _hasGotAspectRatioThumbnail = NO;
     _hasGotFullScreenImage = NO;
     _hasGotFullResolutionImage = NO;
     _duration = 0.f;
+    _orientation = UIImageOrientationUp;
     
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         switch (_phAsset.mediaType) {
@@ -133,30 +138,70 @@
     }
 }
 
+enum {
+    kAMASSETMETADATA_PENDINGREADS = 1,
+    kAMASSETMETADATA_ALLFINISHED = 0
+};
+
 - (NSDictionary *)metadata
 {
     if (!_hasGotMetaData) {
         _hasGotMetaData = YES;
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-            PHImageRequestOptions *request = [PHImageRequestOptions new];
-            request.version = PHImageRequestOptionsVersionCurrent;
-            request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-            request.resizeMode = PHImageRequestOptionsResizeModeNone;
-            request.synchronous = YES;
-            
-            [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                if (PHAssetMediaTypeImage == _mediaType) {
+            if (PHAssetMediaTypeImage == _mediaType) {
+                PHImageRequestOptions *request = [PHImageRequestOptions new];
+                request.version = PHImageRequestOptionsVersionCurrent;
+                request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                request.resizeMode = PHImageRequestOptionsResizeModeNone;
+                request.synchronous = YES;
+                
+                [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
-                    _metaData = (NSMutableDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
-                    CFRelease(source);
-                }
-                _fileURL = info[@"PHImageFileURLKey"];
-                _orientation = orientation;
-            }];
+                    if (NULL != source) {
+                        _metaData = (NSMutableDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
+                        CFRelease(source);
+                    }
+                    _fileSize = imageData.length;
+                    _UTI = dataUTI;
+                    _assetURL = [NSURL URLWithString: _phAsset.localIdentifier];
+                    _orientation = orientation;
+                }];
+            }
+            else if (PHAssetMediaTypeVideo == _mediaType) {
+                PHVideoRequestOptions *request = [PHVideoRequestOptions new];
+                request.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+                request.version = PHVideoRequestOptionsVersionCurrent;
+                
+                NSConditionLock* assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
+                [[PHImageManager defaultManager] requestPlayerItemForVideo:_phAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
+                    
+                    _metaData = [NSMutableDictionary dictionary];
+                    NSArray *commonMetaData = playerItem.asset.commonMetadata;
+                    for (AVMetadataItem *item in commonMetaData) {
+                        _metaData[item.commonKey] = item.value;
+                    }
+                    
+                    AVURLAsset *urlAsset = (AVURLAsset *)playerItem.asset;
+                    NSNumber *fileSize = nil;;
+                    [urlAsset.URL getResourceValue:&fileSize forKey:NSURLFileSizeKey error:nil];
+                    _fileSize = [fileSize unsignedLongLongValue];
+                    _UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)([urlAsset.URL pathExtension]), NULL);
+                    _assetURL = [NSURL URLWithString: _phAsset.localIdentifier];
+                    
+                    [assetReadLock lock];
+                    [assetReadLock unlockWithCondition:kAMASSETMETADATA_ALLFINISHED];
+                }];
+                [assetReadLock lockWhenCondition:kAMASSETMETADATA_ALLFINISHED];
+                [assetReadLock unlock];
+                assetReadLock = nil;
+            }
         }
         else {
-            _metaData = _alAsset.defaultRepresentation.metadata;
-            _fileURL = [_alAsset valueForProperty: ALAssetPropertyAssetURL];
+            ALAssetRepresentation *defaultRep = _alAsset.defaultRepresentation;
+            _metaData = [NSMutableDictionary dictionaryWithDictionary:defaultRep.metadata];
+            _fileSize = defaultRep.size;
+            _UTI = defaultRep.UTI;
+            _assetURL = [_alAsset valueForProperty: ALAssetPropertyAssetURL];
             _orientation = (UIImageOrientation)_alAsset.defaultRepresentation.orientation;
         }
     }
@@ -188,7 +233,15 @@
     if (!_hasGotMetaData) {
         [self metadata];
     }
-    return _fileURL;
+    return _assetURL;
+}
+
+- (unsigned long long)fileSize
+{
+    if (!_hasGotMetaData) {
+        [self metadata];
+    }
+    return _fileSize;
 }
 
 - (UIImageOrientation)orientation
@@ -197,6 +250,14 @@
         [self metadata];
     }
     return _orientation;
+}
+
+- (NSString *)UTI
+{
+    if (!_hasGotMetaData) {
+        [self metadata];
+    }
+    return _UTI;
 }
 
 - (UIImage *)thumbnail

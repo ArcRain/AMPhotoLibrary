@@ -24,9 +24,11 @@ typedef NS_ENUM(NSInteger, AMPhotoAssetMediaType) {
 @property (nonatomic, readonly, strong) NSDate *creationDate;
 @property (nonatomic, readonly, strong) CLLocation *location;
 @property (nonatomic, readonly, strong) NSURL *assetURL;
+@property (nonatomic, readonly, assign) unsigned long long fileSize;
 
 @property (nonatomic, readonly, strong) UIImage *thumbnail;
 @property (nonatomic, readonly, strong) UIImage *aspectRatioThumbnail;
+@property (nonatomic, readonly, copy) NSString *UTI;
 
 //Image Property
 /*
