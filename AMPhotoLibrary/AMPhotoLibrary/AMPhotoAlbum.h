@@ -8,6 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+@class AMPhotoAlbum;
+@class AMPhotoAsset;
+
+typedef void (^AMPhotoManagerResultBlock)(BOOL success, NSError *error);
+typedef void (^AMPhotoManagerCheckBlock)(AMPhotoAlbum *album, NSError *error);
+typedef void (^AMPhotoManagerAlbumEnumerationBlock)(AMPhotoAlbum *album, BOOL *stop);
+typedef void (^AMPhotoManagerAssetEnumerationBlock)(AMPhotoAsset *asset, NSUInteger index, BOOL *stop);
+
 @interface AMPhotoAlbum : NSObject
 
 @property (nonatomic, readonly, strong) NSString *title;
@@ -15,9 +23,16 @@
 @property (nonatomic, readonly, strong) UIImage *posterImage;
 
 + (AMPhotoAlbum *)photoAlbumWithALAssetsGroup:(ALAssetsGroup *)assetsGroup;
-+ (AMPhotoAlbum *)photoAlbumWithPHAssetCollection:(PHAssetCollection *)assetCollection;
-
 - (ALAssetsGroup *)asALAssetsGroup;
+
+#if __AMPHOTOLIB_USE_PHOTO__
++ (AMPhotoAlbum *)photoAlbumWithPHAssetCollection:(PHAssetCollection *)assetCollection;
 - (PHAssetCollection *)asPHAssetCollection;
+
+@property (nonatomic, readonly, strong) PHFetchResult *fetchResult;
+
+#endif
+
+- (void)enumerateAssets:(AMPhotoManagerAssetEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 
 @end

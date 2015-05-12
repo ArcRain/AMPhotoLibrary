@@ -7,14 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "AMPhotoAlbum.h"
 #import "AMPhotoAsset.h"
+#import "AMPhotoAlbum.h"
 #import "AMPhotoChange.h"
-
-typedef void (^AMPhotoManagerResultBlock)(BOOL success, NSError *error);
-typedef void (^AMPhotoManagerCheckBlock)(AMPhotoAlbum *album, NSError *error);
-typedef void (^AMPhotoManagerAlbumEnumeratorBlock)(AMPhotoAlbum *album, BOOL *stop);
-typedef void (^AMPhotoManagerAssetEnumeratorBlock)(AMPhotoAsset *asset, NSUInteger index, BOOL *stop);
 
 typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
     AMAuthorizationStatusNotDetermined = 0, // User has not yet made a choice with regards to this application
@@ -48,8 +43,7 @@ typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
 - (void)createAlbum:(NSString *)title resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 - (void)checkAlbum:(NSString *)title resultBlock:(AMPhotoManagerCheckBlock)resultBlock;
 
-- (void)enumerateAlbums:(AMPhotoManagerAlbumEnumeratorBlock)enumeratorBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock;
-- (void)enumerateAssets:(AMPhotoManagerAssetEnumeratorBlock)enumeratorBlock inPhotoAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock;
+- (void)enumerateAlbums:(AMPhotoManagerAlbumEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 
 - (void)addAsset:(AMPhotoAsset *)asset toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 

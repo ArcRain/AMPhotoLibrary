@@ -7,14 +7,19 @@
 //
 
 #import "AMPHPhotoLibrary.h"
-#import <Photos/Photos.h>
 #import "AMPhotoChange_Private.h"
+
+#if __AMPHOTOLIB_USE_PHOTO__
 
 @interface AMPHPhotoLibrary () <PHPhotoLibraryChangeObserver>
 {
     NSMutableSet *_changeObservers;
 }
 @end
+
+#endif
+
+#if __AMPHOTOLIB_USE_PHOTO__
 
 @implementation AMPHPhotoLibrary
 
@@ -123,7 +128,7 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)enumerateAlbums:(AMPhotoManagerAlbumEnumeratorBlock)enumeratorBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock
+- (void)enumerateAlbums:(AMPhotoManagerAlbumEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
     void (^notifyResult)(BOOL success, NSError *error) = ^(BOOL success, NSError *error) {
         if (resultBlock) {
@@ -132,22 +137,12 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     };
     
     __block BOOL isStop = NO;
-    do {
-        PHFetchResult *cameraRollResult = [PHAsset fetchAssetsWithOptions: nil];
-        PHAssetCollection *cameraRollCollection = [PHAssetCollection transientAssetCollectionWithAssetFetchResult: cameraRollResult title:NSLocalizedString(@"Camera Roll", nil)];
-        if (enumeratorBlock) {
-            AMPhotoAlbum *photoAlbum = [AMPhotoAlbum photoAlbumWithPHAssetCollection: cameraRollCollection];
-            enumeratorBlock(photoAlbum, &isStop);
-        }
-        if (isStop) {
-            break;
-        }
-        
+    do {       
         PHFetchResult *smartAlbumResult = [PHAssetCollection fetchAssetCollectionsWithType: PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
         [smartAlbumResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            if (enumeratorBlock) {
+            if (enumerationBlock) {
                 AMPhotoAlbum *photoAlbum = [AMPhotoAlbum photoAlbumWithPHAssetCollection: obj];
-                enumeratorBlock(photoAlbum, stop);
+                enumerationBlock(photoAlbum, stop);
                 isStop = *stop;
             }
         }];
@@ -157,38 +152,13 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
         
         PHFetchResult *albumResult = [PHAssetCollection fetchAssetCollectionsWithType: PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
         [albumResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            if (enumeratorBlock) {
+            if (enumerationBlock) {
                 AMPhotoAlbum *photoAlbum = [AMPhotoAlbum photoAlbumWithPHAssetCollection: obj];
-                enumeratorBlock(photoAlbum, stop);
+                enumerationBlock(photoAlbum, stop);
                 isStop = *stop;
             }
         }];
     } while (false);
-    notifyResult(YES, nil);
-}
-
-- (void)enumerateAssets:(AMPhotoManagerAssetEnumeratorBlock)enumeratorBlock inPhotoAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
-    void (^notifyResult)(BOOL success, NSError *error) = ^(BOOL success, NSError *error) {
-        if (resultBlock) {
-            resultBlock(success, error);
-        }
-    };
-    
-    if (nil == photoAlbum) {
-        notifyResult(NO, nil);
-        return;
-    }
-    
-    __block BOOL isStop = NO;
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection: [photoAlbum asPHAssetCollection] options: nil];
-    [fetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if (enumeratorBlock) {
-            AMPhotoAsset *photoAsset = [AMPhotoAsset photoAssetWithPHAsset: obj];
-            enumeratorBlock(photoAsset, idx, stop);
-            isStop = *stop;
-        }
-    }];
     notifyResult(YES, nil);
 }
 
@@ -292,3 +262,5 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
 }
 
 @end
+
+#endif

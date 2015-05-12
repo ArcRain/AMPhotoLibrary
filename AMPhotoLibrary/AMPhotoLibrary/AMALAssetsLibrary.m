@@ -140,7 +140,7 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)enumerateAlbums:(AMPhotoManagerAlbumEnumeratorBlock)enumeratorBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock
+- (void)enumerateAlbums:(AMPhotoManagerAlbumEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
     void (^notifyResult)(BOOL success, NSError *error) = ^(BOOL success, NSError *error) {
         if (resultBlock) {
@@ -153,33 +153,13 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
             notifyResult(YES, nil);
             return;
         }
-        if (enumeratorBlock) {
+        if (enumerationBlock) {
             AMPhotoAlbum *photoAlbum = [AMPhotoAlbum photoAlbumWithALAssetsGroup: group];
-            enumeratorBlock(photoAlbum, stop);
+            enumerationBlock(photoAlbum, stop);
         }
     } failureBlock:^(NSError *error) {
         notifyResult(NO, error);
     }];    
-}
-
-- (void)enumerateAssets:(AMPhotoManagerAssetEnumeratorBlock)enumeratorBlock inPhotoAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
-    void (^notifyResult)(BOOL success, NSError *error) = ^(BOOL success, NSError *error) {
-        if (resultBlock) {
-            resultBlock(success, error);
-        }
-    };
-    
-    [[photoAlbum asALAssetsGroup] enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-        if (nil == result) {
-            notifyResult(YES, nil);
-            return;
-        }
-        if (enumeratorBlock) {
-            AMPhotoAsset *asset = [AMPhotoAsset photoAssetWithALAsset: result];
-            enumeratorBlock(asset, index, stop);
-        }        
-    }];
 }
 
 - (void)addAsset:(AMPhotoAsset *)asset toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock

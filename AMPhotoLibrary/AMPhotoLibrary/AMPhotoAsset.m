@@ -11,8 +11,9 @@
 @interface AMPhotoAsset ()
 {
     ALAsset *_alAsset;
+#if __AMPHOTOLIB_USE_PHOTO__
     PHAsset *_phAsset;
-    
+#endif
     AMPhotoAssetMediaType _mediaType;
     
     BOOL _hasGotThumbnail;
@@ -28,7 +29,8 @@
     UIImage *_fullResolutionImage;
     unsigned long long _fileSize;
     
-    BOOL _hasGotMetaData;
+    BOOL _hasGotInfo;
+    BOOL _hasGotFullMetaData;
     NSMutableDictionary *_metaData;
     NSURL *_assetURL;
     NSString *_UTI;
@@ -46,21 +48,6 @@
     return [[AMPhotoAsset alloc] initWithALAsset: asset];
 }
 
-+ (AMPhotoAsset *)photoAssetWithPHAsset:(PHAsset *)asset
-{
-    return [[AMPhotoAsset alloc] initWithPHAsset: asset];
-}
-
-- (ALAsset *)asALAsset
-{
-    return _alAsset;
-}
-
-- (PHAsset *)asPHAsset
-{
-    return _phAsset;
-}
-
 - (AMPhotoAsset *)initWithALAsset:(ALAsset *)asset
 {
     self = [super init];
@@ -69,6 +56,18 @@
         [self commonInit];
     }
     return self;
+}
+
+- (ALAsset *)asALAsset
+{
+    return _alAsset;
+}
+
+#if __AMPHOTOLIB_USE_PHOTO__
+
++ (AMPhotoAsset *)photoAssetWithPHAsset:(PHAsset *)asset
+{
+    return [[AMPhotoAsset alloc] initWithPHAsset: asset];
 }
 
 - (AMPhotoAsset *)initWithPHAsset:(PHAsset *)asset
@@ -81,9 +80,17 @@
     return self;
 }
 
+- (PHAsset *)asPHAsset
+{
+    return _phAsset;
+}
+
+#endif
+
 - (void)commonInit
 {
-    _hasGotMetaData = NO;
+    _hasGotInfo = NO;
+    _hasGotFullMetaData = NO;
     _hasGotThumbnail = NO;
     _hasGotAspectRatioThumbnail = NO;
     _hasGotFullScreenImage = NO;
@@ -91,6 +98,7 @@
     _duration = 0.f;
     _orientation = UIImageOrientationUp;
     
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         switch (_phAsset.mediaType) {
             case PHAssetMediaTypeImage:
@@ -108,7 +116,9 @@
                 break;
         }
     }
-    else {
+    else
+#endif
+    {
         NSString *mediaType = [_alAsset valueForProperty:ALAssetPropertyType];
         if ([mediaType isEqualToString:ALAssetTypePhoto]) {
             _mediaType = AMPhotoAssetMediaTypeImage;
@@ -130,10 +140,13 @@
 
 - (CGSize)dimensions
 {
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         return CGSizeMake(_phAsset.pixelWidth, _phAsset.pixelHeight);
     }
-    else {
+    else
+#endif
+    {
         return _alAsset.defaultRepresentation.dimensions;
     }
 }
@@ -145,8 +158,9 @@ enum {
 
 - (NSDictionary *)metadata
 {
-    if (!_hasGotMetaData) {
-        _hasGotMetaData = YES;
+    if (!_hasGotFullMetaData) {
+        _hasGotFullMetaData = YES;
+#if __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             if (PHAssetMediaTypeImage == _mediaType) {
                 PHImageRequestOptions *request = [PHImageRequestOptions new];
@@ -161,10 +175,6 @@ enum {
                         _metaData = (NSMutableDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
                         CFRelease(source);
                     }
-                    _fileSize = imageData.length;
-                    _UTI = dataUTI;
-                    _assetURL = [NSURL URLWithString: _phAsset.localIdentifier];
-                    _orientation = orientation;
                 }];
             }
             else if (PHAssetMediaTypeVideo == _mediaType) {
@@ -181,13 +191,6 @@ enum {
                         _metaData[item.commonKey] = item.value;
                     }
                     
-                    AVURLAsset *urlAsset = (AVURLAsset *)playerItem.asset;
-                    NSNumber *fileSize = nil;;
-                    [urlAsset.URL getResourceValue:&fileSize forKey:NSURLFileSizeKey error:nil];
-                    _fileSize = [fileSize unsignedLongLongValue];
-                    _UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)([urlAsset.URL pathExtension]), NULL);
-                    _assetURL = [NSURL URLWithString: _phAsset.localIdentifier];
-                    
                     [assetReadLock lock];
                     [assetReadLock unlockWithCondition:kAMASSETMETADATA_ALLFINISHED];
                 }];
@@ -196,13 +199,11 @@ enum {
                 assetReadLock = nil;
             }
         }
-        else {
+        else
+#endif
+        {
             ALAssetRepresentation *defaultRep = _alAsset.defaultRepresentation;
             _metaData = [NSMutableDictionary dictionaryWithDictionary:defaultRep.metadata];
-            _fileSize = defaultRep.size;
-            _UTI = defaultRep.UTI;
-            _assetURL = [_alAsset valueForProperty: ALAssetPropertyAssetURL];
-            _orientation = (UIImageOrientation)_alAsset.defaultRepresentation.orientation;
         }
     }
     return _metaData;
@@ -210,52 +211,58 @@ enum {
 
 - (NSDate *)creationDate
 {
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         return _phAsset.creationDate;
     }
-    else {
+    else
+#endif
+    {
         return [_alAsset valueForProperty: ALAssetPropertyDate];
     }
 }
 
 - (CLLocation *)location
 {
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         return _phAsset.location;
     }
-    else {
+    else
+#endif
+    {
         return [_alAsset valueForProperty: ALAssetPropertyLocation];
     }
 }
 
 - (NSURL *)assetURL
 {
-    if (!_hasGotMetaData) {
-        [self metadata];
+    if (!_hasGotInfo) {
+        [self getInfo];
     }
     return _assetURL;
 }
 
 - (unsigned long long)fileSize
 {
-    if (!_hasGotMetaData) {
-        [self metadata];
+    if (!_hasGotInfo) {
+        [self getInfo];
     }
     return _fileSize;
 }
 
 - (UIImageOrientation)orientation
 {
-    if (!_hasGotMetaData) {
-        [self metadata];
+    if (!_hasGotInfo) {
+        [self getInfo];
     }
     return _orientation;
 }
 
 - (NSString *)UTI
 {
-    if (!_hasGotMetaData) {
-        [self metadata];
+    if (!_hasGotInfo) {
+        [self getInfo];
     }
     return _UTI;
 }
@@ -264,6 +271,7 @@ enum {
 {
     if (!_hasGotThumbnail) {
         _hasGotThumbnail = YES;
+#if __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
             request.resizeMode = PHImageRequestOptionsResizeModeFast;
@@ -287,7 +295,9 @@ enum {
                 UIGraphicsEndImageContext();
             }];
         }
-        else {
+        else
+#endif
+        {
             _thumbnailImage = [UIImage imageWithCGImage: _alAsset.thumbnail];
         }
     }
@@ -298,6 +308,7 @@ enum {
 {
     if (!_hasGotAspectRatioThumbnail) {
         _hasGotAspectRatioThumbnail = YES;
+#if __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
             request.resizeMode = PHImageRequestOptionsResizeModeFast;
@@ -310,7 +321,9 @@ enum {
                 _aspectRatioThumbnailImage = result;
             }];
         }
-        else {
+        else
+#endif
+        {
             _aspectRatioThumbnailImage = [UIImage imageWithCGImage: _alAsset.aspectRatioThumbnail];
         }
     }
@@ -324,6 +337,7 @@ enum {
     }
     if (!_hasGotFullScreenImage) {
         _hasGotFullScreenImage = YES;
+#if __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
             request.resizeMode = PHImageRequestOptionsResizeModeExact;
@@ -339,7 +353,9 @@ enum {
                 _fullScreenImage = result;
             }];
         }
-        else {
+        else
+#endif
+        {
             ALAssetRepresentation *defaultAssetRep = _alAsset.defaultRepresentation;
             _fullScreenImage = [UIImage imageWithCGImage: defaultAssetRep.fullScreenImage scale:defaultAssetRep.scale orientation:(UIImageOrientation)defaultAssetRep.orientation];
         }
@@ -354,6 +370,7 @@ enum {
     }
     if (!_hasGotFullResolutionImage) {
         _hasGotFullResolutionImage = YES;
+#if __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
             request.resizeMode = PHImageRequestOptionsResizeModeNone;
@@ -365,7 +382,9 @@ enum {
                 _fullResolutionImage = [UIImage imageWithData: imageData];
             }];
         }
-        else {
+        else
+#endif
+        {
             ALAssetRepresentation *defaultAssetRep = _alAsset.defaultRepresentation;
             _fullResolutionImage = [UIImage imageWithCGImage: defaultAssetRep.fullResolutionImage scale:defaultAssetRep.scale orientation:(UIImageOrientation)defaultAssetRep.orientation];
         }
@@ -376,6 +395,93 @@ enum {
 - (NSTimeInterval)duration
 {
     return _duration;
+}
+
+- (void)getInfo
+{
+    if (!_hasGotInfo) {
+        _hasGotInfo = YES;
+#if __AMPHOTOLIB_USE_PHOTO__
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+            if (PHAssetMediaTypeImage == _mediaType) {
+                PHImageRequestOptions *request = [PHImageRequestOptions new];
+                request.version = PHImageRequestOptionsVersionCurrent;
+                request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                request.resizeMode = PHImageRequestOptionsResizeModeNone;
+                request.synchronous = YES;
+                
+                [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                    _fileSize = imageData.length;
+                    _UTI = dataUTI;
+                    _assetURL = [NSURL URLWithString: _phAsset.localIdentifier];
+                    _orientation = orientation;
+                }];
+            }
+            else if (PHAssetMediaTypeVideo == _mediaType) {
+                PHVideoRequestOptions *request = [PHVideoRequestOptions new];
+                request.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+                request.version = PHVideoRequestOptionsVersionCurrent;
+                
+                NSConditionLock* assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
+                [[PHImageManager defaultManager] requestPlayerItemForVideo:_phAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
+                    AVURLAsset *urlAsset = (AVURLAsset *)playerItem.asset;
+                    NSNumber *fileSize = nil;;
+                    [urlAsset.URL getResourceValue:&fileSize forKey:NSURLFileSizeKey error:nil];
+                    _fileSize = [fileSize unsignedLongLongValue];
+                    _UTI = CFBridgingRelease(UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)([urlAsset.URL pathExtension]), NULL));
+                    _assetURL = [NSURL URLWithString: _phAsset.localIdentifier];
+                    
+                    [assetReadLock lock];
+                    [assetReadLock unlockWithCondition:kAMASSETMETADATA_ALLFINISHED];
+                }];
+                [assetReadLock lockWhenCondition:kAMASSETMETADATA_ALLFINISHED];
+                [assetReadLock unlock];
+                assetReadLock = nil;
+            }
+        }
+        else
+#endif
+        {
+            ALAssetRepresentation *defaultRep = _alAsset.defaultRepresentation;
+            _fileSize = defaultRep.size;
+            _UTI = defaultRep.UTI;
+            _assetURL = [_alAsset valueForProperty: ALAssetPropertyAssetURL];
+            _orientation = (UIImageOrientation)_alAsset.defaultRepresentation.orientation;
+        }
+    }
+}
+
++ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void (^)(NSData *, NSURL *, ALAssetRepresentation *))result
+{
+#if __AMPHOTOLIB_USE_PHOTO__
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        if (AMPhotoAssetMediaTypeImage == asset.mediaType) {
+            PHImageRequestOptions *request = [PHImageRequestOptions new];
+            request.resizeMode = PHImageRequestOptionsResizeModeNone;
+            request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+            request.version = PHImageRequestOptionsVersionCurrent;
+            request.synchronous = NO;
+            
+            [[PHImageManager defaultManager] requestImageDataForAsset:asset.asPHAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                result(imageData, nil, nil);
+            }];
+        }
+        else if (AMPhotoAssetMediaTypeVideo == asset.mediaType) {
+            PHVideoRequestOptions *request = [PHVideoRequestOptions new];
+            request.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+            request.version = PHVideoRequestOptionsVersionCurrent;
+            
+            [[PHImageManager defaultManager] requestPlayerItemForVideo:asset.asPHAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
+                AVURLAsset *urlAsset = (AVURLAsset *)playerItem.asset;
+                result(nil, urlAsset.URL, nil);
+            }];
+        }
+    }
+    else
+#endif
+    {
+        result(nil, nil, asset.asALAsset.defaultRepresentation);
+    }
 }
 
 @end

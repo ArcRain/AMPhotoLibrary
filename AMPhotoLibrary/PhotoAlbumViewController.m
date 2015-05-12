@@ -64,18 +64,16 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
 {
     [super viewWillAppear: animated];
     
-    NSMutableArray *tempArray = [NSMutableArray array];
-    [[AMPhotoLibrary sharedPhotoLibrary] enumerateAlbums:^(AMPhotoAlbum *album, BOOL *stop) {
-        
-        //Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        //if (album.numberOfAssets == 0) {
-        //    return;
-        //}
-        
-        [tempArray addObject: album];
-    } resultBlock:^(BOOL success, NSError *error) {
-        _photoAlbums = tempArray;
-        [self.tableView reloadData];
+    [AMPhotoLibrary requestAuthorization:^(AMAuthorizationStatus status) {
+        if (status == AMAuthorizationStatusAuthorized) {
+            NSMutableArray *tempArray = [NSMutableArray array];
+            [[AMPhotoLibrary sharedPhotoLibrary] enumerateAlbums:^(AMPhotoAlbum *album, BOOL *stop) {                
+                [tempArray addObject: album];
+            } resultBlock:^(BOOL success, NSError *error) {
+                _photoAlbums = tempArray;
+                [self.tableView reloadData];
+            }];
+        }
     }];
 }
 

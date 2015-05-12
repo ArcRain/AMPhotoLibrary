@@ -42,9 +42,17 @@ typedef NS_ENUM(NSInteger, AMPhotoAssetMediaType) {
 @property (nonatomic, readonly, assign) NSTimeInterval duration;
 
 + (AMPhotoAsset *)photoAssetWithALAsset:(ALAsset *)asset;
-+ (AMPhotoAsset *)photoAssetWithPHAsset:(PHAsset *)asset;
-
 - (ALAsset *)asALAsset;
+
+#if __AMPHOTOLIB_USE_PHOTO__
++ (AMPhotoAsset *)photoAssetWithPHAsset:(PHAsset *)asset;
 - (PHAsset *)asPHAsset;
+#endif
+
+/*
+ For Image: use rawData
+ For Video: create NSFileHandle with rawDataURL
+ */
++ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void(^)(NSData *rawData, NSURL *rawDataURL, ALAssetRepresentation *assetRepresentation))result;
 
 @end

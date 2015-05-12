@@ -8,7 +8,10 @@
 
 #import "AMPhotoLibrary.h"
 #import "AMALAssetsLibrary.h"
-#import "AMPHPhotoLibrary.h"
+
+#if __AMPHOTOLIB_USE_PHOTO__
+    #import "AMPHPhotoLibrary.h"
+#endif
 
 @interface AMPhotoLibrary ()
 {
@@ -30,20 +33,26 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
 
 + (AMAuthorizationStatus)authorizationStatus
 {
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         return [AMPHPhotoLibrary authorizationStatus];
     }
-    else {
+    else
+#endif
+    {
         return [AMALAssetsLibrary authorizationStatus];
     }
 }
 
 + (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler
 {
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         [AMPHPhotoLibrary requestAuthorization:handler];
     }
-    else {
+    else
+#endif
+    {
         [AMALAssetsLibrary requestAuthorization:handler];
     }
 }
@@ -52,10 +61,13 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
 {
     self = [super init];
     if (self) {
+#if __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             _photoManager = [AMPHPhotoLibrary sharedPhotoManager];
         }
-        else {
+        else
+#endif
+        {
             _photoManager = [AMALAssetsLibrary sharedPhotoManager];
         }
     }
@@ -82,14 +94,9 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
     [_photoManager checkAlbum: title resultBlock: resultBlock];
 }
 
-- (void)enumerateAlbums:(AMPhotoManagerAlbumEnumeratorBlock)enumeratorBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock
+- (void)enumerateAlbums:(AMPhotoManagerAlbumEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
-    [_photoManager enumerateAlbums: enumeratorBlock resultBlock: resultBlock];
-}
-
-- (void)enumerateAssets:(AMPhotoManagerAssetEnumeratorBlock)enumeratorBlock inPhotoAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
-    [_photoManager enumerateAssets: enumeratorBlock inPhotoAlbum: photoAlbum resultBlock: resultBlock];
+    [_photoManager enumerateAlbums: enumerationBlock resultBlock: resultBlock];
 }
 
 - (void)addAsset:(AMPhotoAsset *)asset toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock

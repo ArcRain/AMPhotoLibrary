@@ -15,6 +15,7 @@
 
 // the object is AMPhotoAsset/AMPhotoAlbum
 - (AMPhotoChangeDetails *)changeDetailsForObject:(id)object;
+- (AMPhotoChangeDetails *)changeDetailsForFetchResult:(id)object;
 
 @end
 

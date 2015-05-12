@@ -11,7 +11,9 @@
 #pragma mark - AMPhotoChange
 @interface AMPhotoChange ()
 {
+#if __AMPHOTOLIB_USE_PHOTO__
     PHChange *_changeInstance;
+#endif
     NSDictionary *_noteUserInfo;
 }
 @end
@@ -23,11 +25,6 @@
     return [[AMPhotoChange alloc] initWithALChange:changeInfo];
 }
 
-+ (instancetype)changeWithPHChange:(PHChange *)changeInstance
-{
-    return [[AMPhotoChange alloc] initWithPHChange:changeInstance];
-}
-
 - (instancetype)initWithALChange:(NSDictionary *)changeInfo
 {
     self = [super init];
@@ -35,6 +32,13 @@
         _noteUserInfo = changeInfo;
     }
     return self;
+}
+
+#if __AMPHOTOLIB_USE_PHOTO__
+
++ (instancetype)changeWithPHChange:(PHChange *)changeInstance
+{
+    return [[AMPhotoChange alloc] initWithPHChange:changeInstance];
 }
 
 - (instancetype)initWithPHChange:(PHChange *)changeInstance
@@ -46,9 +50,12 @@
     return self;
 }
 
+#endif
+
 - (AMPhotoChangeDetails *)changeDetailsForObject:(id)object
 {
     AMPhotoChangeDetails *changeDetails = nil;
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         if ([object isKindOfClass:[AMPhotoAsset class]]) {
             AMPhotoAsset *asset = (AMPhotoAsset *)object;
@@ -59,7 +66,9 @@
             changeDetails = [AMPhotoChangeDetails changeDetailsWithPHObjectChangeDetails: [_changeInstance changeDetailsForObject:[album asPHAssetCollection]]];
         }
     }
-    else {
+    else
+#endif
+    {
         if ([object isKindOfClass:[AMPhotoAsset class]]) {
             AMPhotoAsset *asset = (AMPhotoAsset *)object;
             changeDetails = [AMPhotoChangeDetails changeDetailsWithNotificationInfo: _noteUserInfo forObject:[asset asALAsset]];
@@ -72,12 +81,33 @@
     return changeDetails;
 }
 
+- (AMPhotoChangeDetails *)changeDetailsForFetchResult:(id)object
+{
+    AMPhotoChangeDetails *changeDetails = nil;
+    if ([object isKindOfClass:[AMPhotoAlbum class]]) {
+        AMPhotoAlbum *album = (AMPhotoAlbum *)object;
+#if __AMPHOTOLIB_USE_PHOTO__
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+            changeDetails = [AMPhotoChangeDetails changeDetailsWithPHFetchResultChangeDetails: [_changeInstance changeDetailsForFetchResult:album.fetchResult]];
+        }
+        else
+#endif
+        {
+            changeDetails = [AMPhotoChangeDetails changeDetailsWithNotificationInfo: _noteUserInfo forObject:[album asALAssetsGroup]];
+        }
+    }
+    return changeDetails;
+}
+
 @end
 
 #pragma mark - AMPhotoChangeDetails
 @interface AMPhotoChangeDetails ()
 {
+#if __AMPHOTOLIB_USE_PHOTO__
     PHObjectChangeDetails *_changeDetails;
+    PHFetchResultChangeDetails *_fetchResultChangeDetails;
+#endif
     
     NSDictionary *_userInfo;
     NSObject *_object;
@@ -94,14 +124,7 @@
     return [[[self class] alloc] initWithNotificationInfo: userInfo forObject: object];
 }
 
-+ (instancetype)changeDetailsWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails
-{
-    if (nil == changeDetails) {
-        return nil;
-    }
-    return [[[self class] alloc] initWithPHObjectChangeDetails: changeDetails];
-}
-            
+
 - (instancetype)initWithNotificationInfo:(NSDictionary *)userInfo forObject:(NSObject *)object
 {
     self = [super init];
@@ -112,31 +135,84 @@
     return self;
 }
 
+#if __AMPHOTOLIB_USE_PHOTO__
+
++ (instancetype)changeDetailsWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails
+{
+    if (nil == changeDetails) {
+        return nil;
+    }
+    return [[[self class] alloc] initWithPHObjectChangeDetails: changeDetails];
+}
+
++ (instancetype)changeDetailsWithPHFetchResultChangeDetails:(PHFetchResultChangeDetails *)fetchResultChangeDetails
+{
+    if (nil == fetchResultChangeDetails) {
+        return nil;
+    }
+    return [[[self class] alloc] initWithPHFetchResultChangeDetails: fetchResultChangeDetails];
+}
+
 - (instancetype)initWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails
 {
     self = [super init];
     if (self) {
         _changeDetails = changeDetails;
+        _fetchResultChangeDetails = nil;
     }
     return self;
 }
 
+- (instancetype)initWithPHFetchResultChangeDetails:(PHFetchResultChangeDetails *)fetchResultChangeDetails
+{
+    self = [super init];
+    if (self) {
+        _changeDetails = nil;
+        _fetchResultChangeDetails = fetchResultChangeDetails;
+    }
+    return self;
+}
+
+#endif
+
 - (id)objectBeforeChanges
 {
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        return _changeDetails.objectBeforeChanges;
+        if (nil != _changeDetails) {
+            return _changeDetails.objectBeforeChanges;
+        }
+        else if (nil != _fetchResultChangeDetails) {
+            return _fetchResultChangeDetails.fetchResultBeforeChanges;
+        }
+        else {
+            return nil;
+        }
     }
-    else {
+    else
+#endif
+    {
         return _object;
     }
 }
 
 - (id)objectAfterChanges
 {
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        return _changeDetails.objectAfterChanges;
+        if (nil != _changeDetails) {
+            return _changeDetails.objectAfterChanges;
+        }
+        else if (nil != _fetchResultChangeDetails) {
+            return _fetchResultChangeDetails.fetchResultAfterChanges;
+        }
+        else {
+            return nil;
+        }
     }
-    else {
+    else
+#endif
+    {
         return nil;
     }
 }
@@ -144,10 +220,18 @@
 - (BOOL)objectWasChanged
 {
     __block BOOL wasChanged = NO;
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        wasChanged = _changeDetails.assetContentChanged;
+        if (nil != _changeDetails) {
+            wasChanged = _changeDetails.assetContentChanged;
+        }
+        else if (nil != _fetchResultChangeDetails) {
+            wasChanged = (_fetchResultChangeDetails.fetchResultAfterChanges != _fetchResultChangeDetails.fetchResultBeforeChanges);
+        }
     }
-    else {
+    else
+#endif
+    {
         if ([_object isKindOfClass:[ALAsset class]]) {
             NSSet *updatedAssets = _userInfo[ALAssetLibraryUpdatedAssetsKey];
             NSURL *objectURL = [((ALAsset *)_object) valueForProperty:ALAssetPropertyAssetURL];
@@ -173,10 +257,13 @@
 - (BOOL)objectWasDeleted
 {
     __block BOOL wasDeleted = NO;
+#if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         wasDeleted = _changeDetails.objectWasDeleted;
     }
-    else {
+    else
+#endif
+    {
         if ([_object isKindOfClass:[ALAssetsGroup class]]) {
             NSSet *deletedAssetsGroups = _userInfo[ALAssetLibraryDeletedAssetGroupsKey];
             NSURL *objectURL = [((ALAssetsGroup *)_object) valueForProperty:ALAssetsGroupPropertyURL];

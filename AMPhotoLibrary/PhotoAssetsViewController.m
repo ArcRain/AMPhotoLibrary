@@ -74,9 +74,9 @@ static NSString * const reuseIdentifier = @"UICollectionViewCell";
     [super viewWillAppear: animated];
     
     NSMutableArray *tempArray = [NSMutableArray array];
-    [[AMPhotoLibrary sharedPhotoLibrary] enumerateAssets:^(AMPhotoAsset *asset, NSUInteger index, BOOL *stop) {
+    [self.photoAlbum enumerateAssets:^(AMPhotoAsset *asset, NSUInteger index, BOOL *stop) {
         [tempArray addObject: asset];
-    } inPhotoAlbum: self.photoAlbum resultBlock:^(BOOL success, NSError *error) {
+    } resultBlock:^(BOOL success, NSError *error) {
         _photoAssets = tempArray;
         [self.collectionView reloadData];
     }];
