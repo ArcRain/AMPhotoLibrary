@@ -2,8 +2,8 @@
 //  AMPhotoChange.m
 //  AMPhotoLibrary
 //
-//  Created by Anwu Yang on 10/17/14.
-//  Copyright (c) 2014 arcrain. All rights reserved.
+//  Created by ArcRain on 9/28/14.
+//  Copyright (c) 2014 Sora Yang. All rights reserved.
 //
 
 #import "AMPhotoChange_Private.h"
