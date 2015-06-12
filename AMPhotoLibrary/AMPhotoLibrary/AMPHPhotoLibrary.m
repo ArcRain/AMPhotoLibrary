@@ -62,9 +62,11 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
 + (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler
 {
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-        if (handler) {
-            handler([[self class] authorizationStatusFromPHAuthorizationStatus: status]);
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (handler) {
+                handler([[self class] authorizationStatusFromPHAuthorizationStatus: status]);
+            }
+        });
     }];
 }
 
@@ -167,6 +169,50 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         PHAssetCollectionChangeRequest *collectionRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection: [photoAlbum asPHAssetCollection]];
         [collectionRequest addAssets: @[[asset asPHAsset]]];
+    } completionHandler:^(BOOL success, NSError *error) {
+        if (resultBlock) {
+            resultBlock(success, error);
+        }
+    }];
+}
+
+- (void)deleteAssets:(NSArray *)assets resultBlock:(AMPhotoManagerResultBlock)resultBlock
+{
+    NSMutableArray *deleteAssets = [NSMutableArray array];
+    for (AMPhotoAsset *asset in assets) {
+        [deleteAssets addObject:[asset asPHAsset]];
+    }
+    if (0 == deleteAssets.count) {
+        if (resultBlock) {
+            resultBlock(YES, nil);
+        }
+        return;
+    }
+    
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetChangeRequest deleteAssets:deleteAssets];
+    } completionHandler:^(BOOL success, NSError *error) {
+        if (resultBlock) {
+            resultBlock(success, error);
+        }
+    }];
+}
+
+- (void)deleteAlbums:(NSArray *)albums resultBlock:(AMPhotoManagerResultBlock)resultBlock
+{
+    NSMutableArray *deleteAlbums = [NSMutableArray array];
+    for (AMPhotoAlbum *album in albums) {
+        [deleteAlbums addObject:[album asPHAssetCollection]];
+    }
+    if (0 == deleteAlbums.count) {
+        if (resultBlock) {
+            resultBlock(YES, nil);
+        }
+        return;
+    }
+    
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+        [PHAssetCollectionChangeRequest deleteAssetCollections:deleteAlbums];
     } completionHandler:^(BOOL success, NSError *error) {
         if (resultBlock) {
             resultBlock(success, error);

@@ -104,9 +104,10 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
 {
     [tableView deselectRowAtIndexPath: indexPath animated:NO];
     
+    CGFloat itemWidth = floorf((tableView.bounds.size.width - 1 - 1 - 2 * 3) / 4);
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     flowLayout.sectionInset = UIEdgeInsetsMake(2, 1, 2, 1);
-    flowLayout.itemSize = CGSizeMake(78, 78);
+    flowLayout.itemSize = CGSizeMake(itemWidth, itemWidth);
     flowLayout.minimumInteritemSpacing = 2.f;
     flowLayout.minimumLineSpacing = 2.f;
     

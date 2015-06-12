@@ -61,16 +61,20 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
         ALAssetsLibrary *testLibrary = [ALAssetsLibrary new];
         [testLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
             if (nil == group) {
-                if (handler) {
-                    handler([[self class] authorizationStatus]);
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (handler) {
+                        handler([[self class] authorizationStatus]);
+                    }
+                });
                 return;
             }
             *stop = YES;
         } failureBlock:^(NSError *error) {
-            if (handler) {
-                handler([[self class] authorizationStatus]);
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (handler) {
+                    handler([[self class] authorizationStatus]);
+                }
+            });
         }];
     }
 }
@@ -167,6 +171,56 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
     BOOL hasAdded = [[photoAlbum asALAssetsGroup] addAsset:[asset asALAsset]];
     if (resultBlock) {
         resultBlock(hasAdded, nil);
+    }
+}
+
+enum {
+    kAMASSET_PENDINGDELETE = 1,
+    kAMASSET_ALLFINISHED = 0
+};
+
+- (void)deleteAssets:(NSArray *)assets resultBlock:(AMPhotoManagerResultBlock)resultBlock
+{
+    NSMutableArray *deleteAssets = [NSMutableArray array];
+    for (AMPhotoAsset *asset in assets) {
+        [deleteAssets addObject:[asset asALAsset]];
+    }
+    if (0 == deleteAssets.count) {
+        if (resultBlock) {
+            resultBlock(YES, nil);
+        }
+        return;
+    }
+    
+    __block BOOL isAllDeleted = YES;
+    for (ALAsset *alAsset in deleteAssets) {
+        if (!alAsset.editable) {
+            isAllDeleted = NO;
+            continue;
+        }
+        @autoreleasepool {
+            NSConditionLock* assetDeleteLock = [[NSConditionLock alloc] initWithCondition:kAMASSET_PENDINGDELETE];
+            [alAsset setImageData:nil metadata:nil completionBlock:^(NSURL *assetURL, NSError *error) {
+                [assetDeleteLock lock];
+                [assetDeleteLock unlockWithCondition:kAMASSET_ALLFINISHED];
+                
+                isAllDeleted &= (nil != assetURL);
+            }];
+            [assetDeleteLock lockWhenCondition:kAMASSET_ALLFINISHED];
+            [assetDeleteLock unlock];
+            assetDeleteLock = nil;
+        }
+    }
+    
+    if (resultBlock) {
+        resultBlock(isAllDeleted, nil);
+    }
+}
+
+- (void)deleteAlbums:(NSArray *)albums resultBlock:(AMPhotoManagerResultBlock)resultBlock
+{
+    if (resultBlock) {
+        resultBlock(NO, nil);
     }
 }
 

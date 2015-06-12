@@ -10,29 +10,36 @@
 	<string>AMPhotoLibrary</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>ad7df280-dc08-f6f3-7e0a-ce57b7db7bff</key>
-		<string>https://github.com/ArcRain/AMPhotoLibrary.git</string>
+		<key>ad7df280-dc08-f6f3-7e0a-ce57b7db7bff++505</key>
+		<string>https://github.com/ArcRain/AMPhotoLibrary.git/trunk</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>trunk/AMPhotoLibrary.xcodeproj</string>
+	<string>AMPhotoLibrary.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>ad7df280-dc08-f6f3-7e0a-ce57b7db7bff</key>
-		<string>../../..</string>
+		<key>ad7df280-dc08-f6f3-7e0a-ce57b7db7bff++505</key>
+		<string>../..</string>
 	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>ad7df280-dc08-f6f3-7e0a-ce57b7db7bff++505</key>
+		<string>https://github.com/ArcRain/AMPhotoLibrary.git</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/ArcRain/AMPhotoLibrary.git/trunk/AMPhotoLibrary.xcodeproj</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>ad7df280-dc08-f6f3-7e0a-ce57b7db7bff</string>
+	<string>ad7df280-dc08-f6f3-7e0a-ce57b7db7bff++505</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.subversion</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>ad7df280-dc08-f6f3-7e0a-ce57b7db7bff</string>
+			<string>ad7df280-dc08-f6f3-7e0a-ce57b7db7bff++505</string>
 			<key>IDESourceControlWCCName</key>
-			<string>Github</string>
+			<string>AMPhotoLibrary</string>
 		</dict>
 	</array>
 </dict>

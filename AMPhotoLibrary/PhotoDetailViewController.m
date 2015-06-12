@@ -25,6 +25,9 @@
     _imageView.contentMode = UIViewContentModeScaleAspectFit;
     _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview: _imageView];
+    
+    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(didClickDelete)];
+    self.navigationItem.rightBarButtonItem = rightItem;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -36,6 +39,27 @@
 {
     [super viewWillAppear: animated];
     self.imageView.image = self.photoAsset.fullScreenImage;
+}
+
+- (void)didClickDelete
+{
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:@"Do you want to delete this file?" preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        
+    }];
+    UIAlertAction *delete = [UIAlertAction actionWithTitle:@"Delete" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [[AMPhotoLibrary sharedPhotoLibrary] deleteAssets:@[self.photoAsset] resultBlock:^(BOOL success, NSError *error) {
+            if (success) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
+            }
+        }];
+    }];
+    [alertController addAction:delete];
+    [alertController addAction:cancel];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

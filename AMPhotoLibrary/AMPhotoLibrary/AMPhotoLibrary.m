@@ -104,6 +104,16 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
     [_photoManager addAsset:asset toAlbum:photoAlbum resultBlock:resultBlock];
 }
 
+- (void)deleteAssets:(NSArray *)assets resultBlock:(AMPhotoManagerResultBlock)resultBlock
+{
+    [_photoManager deleteAssets:assets resultBlock:resultBlock];
+}
+
+- (void)deleteAlbums:(NSArray *)albums resultBlock:(AMPhotoManagerResultBlock)resultBlock
+{
+    [_photoManager deleteAlbums:albums resultBlock:resultBlock];
+}
+
 - (void)writeImageToSavedPhotosAlbum:(UIImage *)image resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
     [_photoManager writeImageToSavedPhotosAlbum: image resultBlock: resultBlock];

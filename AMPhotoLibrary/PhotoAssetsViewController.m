@@ -62,6 +62,8 @@ static NSString * const reuseIdentifier = @"UICollectionViewCell";
     [self.collectionView registerClass:[PhotoAssetsViewCell class] forCellWithReuseIdentifier:PhotoAssetsViewCellReuseIdentifier];
     
     // Do any additional setup after loading the view.
+    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(didClickDelete)];
+    self.navigationItem.rightBarButtonItem = rightItem;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -80,6 +82,27 @@ static NSString * const reuseIdentifier = @"UICollectionViewCell";
         _photoAssets = tempArray;
         [self.collectionView reloadData];
     }];
+}
+
+- (void)didClickDelete
+{
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:@"Do you want to delete this album?" preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        
+    }];
+    UIAlertAction *delete = [UIAlertAction actionWithTitle:@"Delete" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [[AMPhotoLibrary sharedPhotoLibrary] deleteAlbums:@[self.photoAlbum] resultBlock:^(BOOL success, NSError *error) {
+            if (success) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
+            }
+        }];
+    }];
+    [alertController addAction:delete];
+    [alertController addAction:cancel];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma mark <UICollectionViewDataSource>
