@@ -29,6 +29,10 @@ typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
 @end
 
 #pragma mark - AMPhotoManager
+/*
+ Not all function is thread safety.
+ You SHOULD run UI code in main thread when you want to update UI in block.
+ */
 @protocol AMPhotoManager <NSObject>
 
 @required

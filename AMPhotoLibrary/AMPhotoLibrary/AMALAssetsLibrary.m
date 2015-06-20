@@ -61,20 +61,16 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
         ALAssetsLibrary *testLibrary = [ALAssetsLibrary new];
         [testLibrary enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
             if (nil == group) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (handler) {
-                        handler([[self class] authorizationStatus]);
-                    }
-                });
+                if (handler) {
+                    handler([[self class] authorizationStatus]);
+                }
                 return;
             }
             *stop = YES;
         } failureBlock:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (handler) {
-                    handler([[self class] authorizationStatus]);
-                }
-            });
+            if (handler) {
+                handler([[self class] authorizationStatus]);
+            }
         }];
     }
 }

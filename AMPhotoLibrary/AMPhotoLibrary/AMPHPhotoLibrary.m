@@ -62,11 +62,9 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
 + (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler
 {
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (handler) {
-                handler([[self class] authorizationStatusFromPHAuthorizationStatus: status]);
-            }
-        });
+        if (handler) {
+            handler([[self class] authorizationStatusFromPHAuthorizationStatus: status]);
+        }
     }];
 }
 

@@ -71,7 +71,9 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
                 [tempArray addObject: album];
             } resultBlock:^(BOOL success, NSError *error) {
                 _photoAlbums = tempArray;
-                [self.tableView reloadData];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.tableView reloadData];
+                });
             }];
         }
     }];
