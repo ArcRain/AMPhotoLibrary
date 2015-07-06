@@ -122,6 +122,17 @@ static NSString * const reuseIdentifier = @"UICollectionViewCell";
     // Configure the cell
     AMPhotoAsset *asset = (AMPhotoAsset *)_photoAssets[indexPath.item];
     [cell configData: asset];
+    
+    //If you want to get image in async mode, you can use this sample code.
+    /*
+    __weak PhotoAssetsViewCell *weakCell = cell;
+    [AMPhotoAsset fetchAsset:asset withImageType:AMAssetImageTypeThumbnail imageResult:^(UIImage *image) {
+        NSIndexPath *currentIndexPath = [collectionView indexPathForCell:weakCell];
+        if ([currentIndexPath isEqual:indexPath]) {
+            weakCell.imageView.image = image;
+        }
+    }];
+     */
     return cell;
 }
 

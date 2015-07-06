@@ -125,8 +125,8 @@
 
 - (void)enumerateAssets:(AMPhotoManagerAssetEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
-    __block BOOL isStop = NO;
 #if __AMPHOTOLIB_USE_PHOTO__
+    __block BOOL isStop = NO;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         _fetchResult = [PHAsset fetchAssetsInAssetCollection:_assetCollection options: nil];
         [_fetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {

@@ -39,6 +39,13 @@
 {
     [super viewWillAppear: animated];
     self.imageView.image = self.photoAsset.fullScreenImage;
+    
+    //If you want to get image in async mode, you can use this sample code.
+    /*
+    [AMPhotoAsset fetchAsset:self.photoAsset withImageType:AMAssetImageTypeFullScreen imageResult:^(UIImage *image) {
+        self.imageView.image = image;
+    }];
+     */
 }
 
 - (void)didClickDelete

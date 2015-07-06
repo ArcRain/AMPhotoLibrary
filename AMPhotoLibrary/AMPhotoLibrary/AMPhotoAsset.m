@@ -14,7 +14,7 @@
 #if __AMPHOTOLIB_USE_PHOTO__
     PHAsset *_phAsset;
 #endif
-    AMPhotoAssetMediaType _mediaType;
+    AMAssetMediaType _mediaType;
     
     BOOL _hasGotThumbnail;
     UIImage *_thumbnailImage;
@@ -102,17 +102,17 @@
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         switch (_phAsset.mediaType) {
             case PHAssetMediaTypeImage:
-                _mediaType = AMPhotoAssetMediaTypeImage;
+                _mediaType = AMAssetMediaTypeImage;
                 break;
             case PHAssetMediaTypeVideo:
-                _mediaType = AMPhotoAssetMediaTypeVideo;
+                _mediaType = AMAssetMediaTypeVideo;
                 _duration = _phAsset.duration;
                 break;
             case PHAssetMediaTypeAudio:
-                _mediaType = AMPhotoAssetMediaTypeAudio;
+                _mediaType = AMAssetMediaTypeAudio;
                 break;
             default:
-                _mediaType = AMPhotoAssetMediaTypeUnknown;
+                _mediaType = AMAssetMediaTypeUnknown;
                 break;
         }
     }
@@ -121,19 +121,19 @@
     {
         NSString *mediaType = [_alAsset valueForProperty:ALAssetPropertyType];
         if ([mediaType isEqualToString:ALAssetTypePhoto]) {
-            _mediaType = AMPhotoAssetMediaTypeImage;
+            _mediaType = AMAssetMediaTypeImage;
         }
         else if ([mediaType isEqualToString:ALAssetTypeVideo]) {
-            _mediaType = AMPhotoAssetMediaTypeVideo;
+            _mediaType = AMAssetMediaTypeVideo;
             _duration = [[_alAsset valueForProperty:ALAssetPropertyDuration] doubleValue];
         }
         else {
-            _mediaType = AMPhotoAssetMediaTypeUnknown;
+            _mediaType = AMAssetMediaTypeUnknown;
         }
     }
 }
 
-- (AMPhotoAssetMediaType)mediaType
+- (AMAssetMediaType)mediaType
 {
     return _mediaType;
 }
@@ -181,6 +181,7 @@ enum {
                 PHVideoRequestOptions *request = [PHVideoRequestOptions new];
                 request.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
                 request.version = PHVideoRequestOptionsVersionCurrent;
+                request.networkAccessAllowed = YES;
                 
                 NSConditionLock* assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
                 [[PHImageManager defaultManager] requestPlayerItemForVideo:_phAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
@@ -282,17 +283,20 @@ enum {
             CGSize thumbsize = CGSizeMake(160, 160);
             [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:thumbsize contentMode:PHImageContentModeAspectFill options:request resultHandler:^(UIImage *result, NSDictionary *info) {
                 
-                CGFloat minWidth = MIN(result.size.width, result.size.height);
-                CGPoint offset = CGPointMake((result.size.width - minWidth) * 0.5, (result.size.height - minWidth) * 0.5);
-                CGFloat scale = thumbsize.width / (minWidth * result.scale);
+                @autoreleasepool {
+                    CGFloat minWidth = MIN(result.size.width, result.size.height);
+                    CGPoint offset = CGPointMake((result.size.width - minWidth) * 0.5, (result.size.height - minWidth) * 0.5);
+                    CGFloat scale = thumbsize.width / (minWidth * result.scale);
+                    
+                    UIGraphicsBeginImageContextWithOptions(thumbsize, NO, 1.f);
+                    CGContextRef contextRef = UIGraphicsGetCurrentContext();
+                    CGContextTranslateCTM(contextRef, 0, thumbsize.height);
+                    CGContextScaleCTM(contextRef, scale, -scale);
+                    CGContextDrawImage(contextRef, CGRectMake(-offset.x, -offset.y, result.size.width, result.size.height), result.CGImage);
+                    _thumbnailImage = UIGraphicsGetImageFromCurrentImageContext();
+                    UIGraphicsEndImageContext();
+                }
                 
-                UIGraphicsBeginImageContextWithOptions(thumbsize, NO, 1.f);
-                CGContextRef contextRef = UIGraphicsGetCurrentContext();
-                CGContextTranslateCTM(contextRef, 0, thumbsize.height);
-                CGContextScaleCTM(contextRef, scale, -scale);
-                CGContextDrawImage(contextRef, CGRectMake(-offset.x, -offset.y, result.size.width, result.size.height), result.CGImage);
-                _thumbnailImage = UIGraphicsGetImageFromCurrentImageContext();
-                UIGraphicsEndImageContext();
             }];
         }
         else
@@ -332,7 +336,7 @@ enum {
 
 - (UIImage *)fullScreenImage
 {
-    if (AMPhotoAssetMediaTypeImage != _mediaType) {
+    if (AMAssetMediaTypeImage != _mediaType) {
         return nil;
     }
     if (!_hasGotFullScreenImage) {
@@ -365,7 +369,7 @@ enum {
 
 - (UIImage *)fullResolutionImage
 {
-    if (AMPhotoAssetMediaTypeImage != _mediaType) {
+    if (AMAssetMediaTypeImage != _mediaType) {
         return nil;
     }
     if (!_hasGotFullResolutionImage) {
@@ -421,6 +425,7 @@ enum {
                 PHVideoRequestOptions *request = [PHVideoRequestOptions new];
                 request.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
                 request.version = PHVideoRequestOptionsVersionCurrent;
+                request.networkAccessAllowed = YES;
                 
                 NSConditionLock* assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
                 [[PHImageManager defaultManager] requestPlayerItemForVideo:_phAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
@@ -451,36 +456,157 @@ enum {
     }
 }
 
-+ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void (^)(NSData *, NSURL *, ALAssetRepresentation *))result
++ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void (^)(NSData *, NSURL *, ALAssetRepresentation *))resultBlock
 {
 #if __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        if (AMPhotoAssetMediaTypeImage == asset.mediaType) {
+        if (AMAssetMediaTypeImage == asset.mediaType) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
             request.resizeMode = PHImageRequestOptionsResizeModeNone;
             request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
             request.version = PHImageRequestOptionsVersionCurrent;
             request.synchronous = NO;
+            request.networkAccessAllowed = YES;
             
             [[PHImageManager defaultManager] requestImageDataForAsset:asset.asPHAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                result(imageData, nil, nil);
+                resultBlock(imageData, nil, nil);
             }];
         }
-        else if (AMPhotoAssetMediaTypeVideo == asset.mediaType) {
+        else if (AMAssetMediaTypeVideo == asset.mediaType) {
             PHVideoRequestOptions *request = [PHVideoRequestOptions new];
             request.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
             request.version = PHVideoRequestOptionsVersionCurrent;
+            request.networkAccessAllowed = YES;
             
             [[PHImageManager defaultManager] requestPlayerItemForVideo:asset.asPHAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
                 AVURLAsset *urlAsset = (AVURLAsset *)playerItem.asset;
-                result(nil, urlAsset.URL, nil);
+                resultBlock(nil, urlAsset.URL, nil);
             }];
         }
     }
     else
 #endif
     {
-        result(nil, nil, asset.asALAsset.defaultRepresentation);
+        resultBlock(nil, nil, asset.asALAsset.defaultRepresentation);
+    }
+}
+
++ (void)fetchAsset:(AMPhotoAsset *)asset withImageType:(AMAssetImageType)imageType imageResult:(void (^)(UIImage *))resultBlock
+{
+    if (AMAssetMediaTypeImage != asset.mediaType) {
+        if ((AMAssetImageTypeFullResolution == imageType) || (AMAssetImageTypeFullScreen == imageType)) {
+            resultBlock(nil);
+            return;
+        }
+    }
+    
+#if __AMPHOTOLIB_USE_PHOTO__
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        PHImageRequestOptions *request = [PHImageRequestOptions new];
+        request.version = PHImageRequestOptionsVersionCurrent;
+        //PHImageRequestOptionsDeliveryModeHighQualityFormat: Make sure clients will get one result only
+        request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        request.synchronous = NO;
+        request.networkAccessAllowed = YES;
+        
+        CGSize targetSize = CGSizeZero;
+        BOOL needSquareCrop = NO;
+        switch (imageType) {
+            case AMAssetImageTypeThumbnail:
+                needSquareCrop = YES;
+            case AMAssetImageTypeAspectRatioThumbnail:
+            {
+                request.resizeMode = PHImageRequestOptionsResizeModeFast;
+                targetSize = CGSizeMake(160, 160);
+            }
+                break;
+            case AMAssetImageTypeFullScreen:
+            {
+                CGFloat scale = [UIScreen mainScreen].scale;
+                CGSize screenSize = [UIScreen mainScreen].bounds.size;
+                targetSize = CGSizeMake(screenSize.width *= scale, screenSize.height *= scale);
+                request.resizeMode = PHImageRequestOptionsResizeModeExact;
+            }
+                break;
+            case AMAssetImageTypeFullResolution:
+            {
+                request.resizeMode = PHImageRequestOptionsResizeModeNone;
+            }
+                break;
+            default:
+                break;
+        }
+        
+        if (AMAssetImageTypeFullResolution != imageType) {
+            [[PHImageManager defaultManager] requestImageForAsset:[asset asPHAsset] targetSize:targetSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
+                UIImage *resultImage = result;
+                if (needSquareCrop) {
+                    @autoreleasepool {
+                        CGFloat minWidth = MIN(result.size.width, result.size.height);
+                        CGPoint offset = CGPointMake((result.size.width - minWidth) * 0.5, (result.size.height - minWidth) * 0.5);
+                        
+                        UIGraphicsBeginImageContextWithOptions(CGSizeMake(minWidth, minWidth), NO, 1.f);
+                        CGContextRef contextRef = UIGraphicsGetCurrentContext();
+                        CGContextDrawImage(contextRef, CGRectMake(-offset.x, -offset.y, result.size.width, result.size.height), result.CGImage);
+                        resultImage = UIGraphicsGetImageFromCurrentImageContext();
+                        UIGraphicsEndImageContext();
+                    }
+                }
+                resultBlock(result);
+            }];
+        }
+        else {
+            [[PHImageManager defaultManager] requestImageDataForAsset:[asset asPHAsset] options:request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                if (nil == imageData) {
+                    resultBlock(nil);
+                }
+                else {
+                    resultBlock([UIImage imageWithData:imageData]);
+                }
+            }];
+        }
+    }
+    else
+#endif
+    {
+        ALAsset *alAsset = [asset asALAsset];
+        ALAssetRepresentation *defaultRep = alAsset.defaultRepresentation;
+        CGImageRef imageRef = NULL;
+        switch (imageType) {
+            case AMAssetImageTypeThumbnail:
+            {
+                imageRef = alAsset.thumbnail;
+            }
+                break;
+            case AMAssetImageTypeAspectRatioThumbnail:
+            {
+                imageRef = alAsset.aspectRatioThumbnail;
+            }
+                break;
+            case AMAssetImageTypeFullScreen:
+            {
+                imageRef = defaultRep.fullScreenImage;
+            }
+                break;
+            case AMAssetImageTypeFullResolution:
+            {
+                imageRef = defaultRep.fullResolutionImage;
+            }
+                break;
+            default:
+                break;
+        }
+        if (NULL == imageRef) {
+            resultBlock(nil);
+        }
+        else {
+            if (AMAssetImageTypeFullResolution != imageType) {
+                resultBlock([UIImage imageWithCGImage:imageRef]);
+            }
+            else {
+                resultBlock([UIImage imageWithCGImage:imageRef scale:defaultRep.scale orientation:(UIImageOrientation)defaultRep.orientation]);
+            }
+        }
     }
 }
 

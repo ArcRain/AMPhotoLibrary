@@ -8,16 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, AMPhotoAssetMediaType) {
-    AMPhotoAssetMediaTypeUnknown = 0,
-    AMPhotoAssetMediaTypeImage   = 1,
-    AMPhotoAssetMediaTypeVideo   = 2,
-    AMPhotoAssetMediaTypeAudio   = 3,
+typedef NS_ENUM(NSInteger, AMAssetMediaType) {
+    AMAssetMediaTypeUnknown = 0,
+    AMAssetMediaTypeImage   = 1,
+    AMAssetMediaTypeVideo   = 2,
+    AMAssetMediaTypeAudio   = 3,
 };
 
 @interface AMPhotoAsset : NSObject
 
-@property (nonatomic, readonly, assign) AMPhotoAssetMediaType mediaType;
+@property (nonatomic, readonly, assign) AMAssetMediaType mediaType;
 
 @property (nonatomic, readonly, assign) CGSize dimensions;
 @property (nonatomic, readonly, strong) NSDictionary *metadata;
@@ -52,7 +52,20 @@ typedef NS_ENUM(NSInteger, AMPhotoAssetMediaType) {
 /*
  For Image: use rawData
  For Video: create NSFileHandle with rawDataURL
+ For iOS8 below: use assetRepresentation
  */
-+ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void(^)(NSData *rawData, NSURL *rawDataURL, ALAssetRepresentation *assetRepresentation))result;
++ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void(^)(NSData *rawData, NSURL *rawDataURL, ALAssetRepresentation *assetRepresentation))resultBlock;
+
+typedef NS_ENUM(NSInteger, AMAssetImageType) {
+    AMAssetImageTypeThumbnail = 0,
+    AMAssetImageTypeAspectRatioThumbnail = 1,
+    AMAssetImageTypeFullScreen = 2,
+    AMAssetImageTypeFullResolution = 3
+};
+
+/*
+ For async mode get image, use this method
+ */
++ (void)fetchAsset:(AMPhotoAsset *)asset withImageType:(AMAssetImageType)imageType imageResult:(void(^)(UIImage *image))resultBlock;
 
 @end
