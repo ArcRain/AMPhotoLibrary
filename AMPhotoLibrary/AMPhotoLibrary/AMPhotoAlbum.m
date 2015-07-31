@@ -11,7 +11,7 @@
 @interface AMPhotoAlbum ()
 {
     ALAssetsGroup *_assetsGroup;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     PHAssetCollection *_assetCollection;
 #endif
     
@@ -42,7 +42,7 @@
     return _assetsGroup;
 }
 
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
 
 + (AMPhotoAlbum *)photoAlbumWithPHAssetCollection:(PHAssetCollection *)assetCollection
 {
@@ -69,7 +69,7 @@
 - (void)commonInit
 {
     _hasGotPosterImage = NO;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         _title = _assetCollection.localizedTitle;
     }
@@ -82,7 +82,7 @@
 
 - (NSInteger)numberOfAssets
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection: _assetCollection options:nil];
         NSUInteger number = fetchResult.count;
@@ -105,7 +105,7 @@
     if (!_hasGotPosterImage) {
         _hasGotPosterImage = YES;
         
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection: _assetCollection options:nil];
             [fetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -125,7 +125,7 @@
 
 - (void)enumerateAssets:(AMPhotoManagerAssetEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     __block BOOL isStop = NO;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         _fetchResult = [PHAsset fetchAssetsInAssetCollection:_assetCollection options: nil];

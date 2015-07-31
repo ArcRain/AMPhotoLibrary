@@ -11,7 +11,7 @@
 @interface AMPhotoAsset ()
 {
     ALAsset *_alAsset;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     PHAsset *_phAsset;
 #endif
     AMAssetMediaType _mediaType;
@@ -63,7 +63,7 @@
     return _alAsset;
 }
 
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
 
 + (AMPhotoAsset *)photoAssetWithPHAsset:(PHAsset *)asset
 {
@@ -98,7 +98,7 @@
     _duration = 0.f;
     _orientation = UIImageOrientationUp;
     
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         switch (_phAsset.mediaType) {
             case PHAssetMediaTypeImage:
@@ -140,7 +140,7 @@
 
 - (CGSize)dimensions
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         return CGSizeMake(_phAsset.pixelWidth, _phAsset.pixelHeight);
     }
@@ -160,7 +160,7 @@ enum {
 {
     if (!_hasGotFullMetaData) {
         _hasGotFullMetaData = YES;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             if (PHAssetMediaTypeImage == _mediaType) {
                 PHImageRequestOptions *request = [PHImageRequestOptions new];
@@ -212,7 +212,7 @@ enum {
 
 - (NSDate *)creationDate
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         return _phAsset.creationDate;
     }
@@ -225,7 +225,7 @@ enum {
 
 - (CLLocation *)location
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         return _phAsset.location;
     }
@@ -272,7 +272,7 @@ enum {
 {
     if (!_hasGotThumbnail) {
         _hasGotThumbnail = YES;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
             request.resizeMode = PHImageRequestOptionsResizeModeFast;
@@ -312,7 +312,7 @@ enum {
 {
     if (!_hasGotAspectRatioThumbnail) {
         _hasGotAspectRatioThumbnail = YES;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
             request.resizeMode = PHImageRequestOptionsResizeModeFast;
@@ -341,7 +341,7 @@ enum {
     }
     if (!_hasGotFullScreenImage) {
         _hasGotFullScreenImage = YES;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
             request.resizeMode = PHImageRequestOptionsResizeModeExact;
@@ -374,7 +374,7 @@ enum {
     }
     if (!_hasGotFullResolutionImage) {
         _hasGotFullResolutionImage = YES;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
             request.resizeMode = PHImageRequestOptionsResizeModeNone;
@@ -405,7 +405,7 @@ enum {
 {
     if (!_hasGotInfo) {
         _hasGotInfo = YES;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             if (PHAssetMediaTypeImage == _mediaType) {
                 PHImageRequestOptions *request = [PHImageRequestOptions new];
@@ -458,7 +458,7 @@ enum {
 
 + (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void (^)(NSData *, NSURL *, ALAssetRepresentation *))resultBlock
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         if (AMAssetMediaTypeImage == asset.mediaType) {
             PHImageRequestOptions *request = [PHImageRequestOptions new];
@@ -500,7 +500,7 @@ enum {
         }
     }
     
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         PHImageRequestOptions *request = [PHImageRequestOptions new];
         request.version = PHImageRequestOptionsVersionCurrent;

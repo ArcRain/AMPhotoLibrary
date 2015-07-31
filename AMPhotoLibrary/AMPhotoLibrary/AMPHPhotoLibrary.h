@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Sora Yang. All rights reserved.
 //
 
-#import "AMPhotoLibraryPreInc.h"
 #import "AMPhotoManager.h"
 
 @interface AMPHPhotoLibrary : NSObject <AMPhotoManager>

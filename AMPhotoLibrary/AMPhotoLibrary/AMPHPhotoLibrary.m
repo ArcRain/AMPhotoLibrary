@@ -9,7 +9,7 @@
 #import "AMPHPhotoLibrary.h"
 #import "AMPhotoChange_Private.h"
 
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
 
 @interface AMPHPhotoLibrary () <PHPhotoLibraryChangeObserver>
 {
@@ -19,7 +19,7 @@
 
 #endif
 
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
 
 @implementation AMPHPhotoLibrary
 

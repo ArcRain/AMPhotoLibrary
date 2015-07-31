@@ -44,7 +44,7 @@ typedef NS_ENUM(NSInteger, AMAssetMediaType) {
 + (AMPhotoAsset *)photoAssetWithALAsset:(ALAsset *)asset;
 - (ALAsset *)asALAsset;
 
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
 + (AMPhotoAsset *)photoAssetWithPHAsset:(PHAsset *)asset;
 - (PHAsset *)asPHAsset;
 #endif

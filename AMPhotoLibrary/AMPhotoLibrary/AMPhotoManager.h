@@ -7,6 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <CoreLocation/CoreLocation.h>
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <AssetsLibrary/AssetsLibrary.h>
+
 #import "AMPhotoAsset.h"
 #import "AMPhotoAlbum.h"
 #import "AMPhotoChange.h"

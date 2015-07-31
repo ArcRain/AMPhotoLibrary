@@ -25,7 +25,7 @@ typedef void (^AMPhotoManagerAssetEnumerationBlock)(AMPhotoAsset *asset, NSUInte
 + (AMPhotoAlbum *)photoAlbumWithALAssetsGroup:(ALAssetsGroup *)assetsGroup;
 - (ALAssetsGroup *)asALAssetsGroup;
 
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
 + (AMPhotoAlbum *)photoAlbumWithPHAssetCollection:(PHAssetCollection *)assetCollection;
 - (PHAssetCollection *)asPHAssetCollection;
 

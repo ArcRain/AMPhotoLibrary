@@ -11,7 +11,7 @@
 #pragma mark - AMPhotoChange
 @interface AMPhotoChange ()
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     PHChange *_changeInstance;
 #endif
     NSDictionary *_noteUserInfo;
@@ -34,7 +34,7 @@
     return self;
 }
 
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
 
 + (instancetype)changeWithPHChange:(PHChange *)changeInstance
 {
@@ -55,7 +55,7 @@
 - (AMPhotoChangeDetails *)changeDetailsForObject:(id)object
 {
     AMPhotoChangeDetails *changeDetails = nil;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         if ([object isKindOfClass:[AMPhotoAsset class]]) {
             AMPhotoAsset *asset = (AMPhotoAsset *)object;
@@ -86,7 +86,7 @@
     AMPhotoChangeDetails *changeDetails = nil;
     if ([object isKindOfClass:[AMPhotoAlbum class]]) {
         AMPhotoAlbum *album = (AMPhotoAlbum *)object;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             changeDetails = [AMPhotoChangeDetails changeDetailsWithPHFetchResultChangeDetails: [_changeInstance changeDetailsForFetchResult:album.fetchResult]];
         }
@@ -104,7 +104,7 @@
 #pragma mark - AMPhotoChangeDetails
 @interface AMPhotoChangeDetails ()
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     PHObjectChangeDetails *_changeDetails;
     PHFetchResultChangeDetails *_fetchResultChangeDetails;
 #endif
@@ -135,7 +135,7 @@
     return self;
 }
 
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
 
 + (instancetype)changeDetailsWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails
 {
@@ -177,7 +177,7 @@
 
 - (id)objectBeforeChanges
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         if (nil != _changeDetails) {
             return _changeDetails.objectBeforeChanges;
@@ -198,7 +198,7 @@
 
 - (id)objectAfterChanges
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         if (nil != _changeDetails) {
             return _changeDetails.objectAfterChanges;
@@ -220,7 +220,7 @@
 - (BOOL)objectWasChanged
 {
     __block BOOL wasChanged = NO;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         if (nil != _changeDetails) {
             wasChanged = _changeDetails.assetContentChanged;
@@ -257,7 +257,7 @@
 - (BOOL)objectWasDeleted
 {
     __block BOOL wasDeleted = NO;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         wasDeleted = _changeDetails.objectWasDeleted;
     }

@@ -9,7 +9,7 @@
 #import "AMPhotoLibrary.h"
 #import "AMALAssetsLibrary.h"
 
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     #import "AMPHPhotoLibrary.h"
 #endif
 
@@ -33,7 +33,7 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
 
 + (AMAuthorizationStatus)authorizationStatus
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         return [AMPHPhotoLibrary authorizationStatus];
     }
@@ -46,7 +46,7 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
 
 + (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler
 {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         [AMPHPhotoLibrary requestAuthorization:handler];
     }
@@ -61,7 +61,7 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
 {
     self = [super init];
     if (self) {
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
             _photoManager = [AMPHPhotoLibrary sharedPhotoManager];
         }

@@ -12,7 +12,7 @@
 @interface AMPhotoChange (Private)
 
 + (instancetype)changeWithALChange:(NSDictionary *)changeInfo;
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
 + (instancetype)changeWithPHChange:(PHChange *)changeInstance;
 #endif
 
@@ -23,7 +23,7 @@
 
 + (instancetype)changeDetailsWithNotificationInfo:(NSDictionary *)userInfo forObject:(NSObject *)object;
 
-#if __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
 + (instancetype)changeDetailsWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails;
 + (instancetype)changeDetailsWithPHFetchResultChangeDetails:(PHFetchResultChangeDetails *)fetchResultChangeDetails;
 #endif
