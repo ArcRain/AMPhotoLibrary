@@ -22,7 +22,7 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
 
 - (void)configData:(AMPhotoAlbum *)data
 {
-    self.textLabel.text = data.title;
+    self.textLabel.text = [NSString stringWithFormat:@"%@ - (%ld)", data.title, data.numberOfAssets];
     self.imageView.image = data.posterImage;
     self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }
@@ -63,11 +63,15 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear: animated];
-    
+    [self reloadAlbums];
+}
+
+- (void)reloadAlbums
+{
     [AMPhotoLibrary requestAuthorization:^(AMAuthorizationStatus status) {
         if (status == AMAuthorizationStatusAuthorized) {
             NSMutableArray *tempArray = [NSMutableArray array];
-            [[AMPhotoLibrary sharedPhotoLibrary] enumerateAlbums:^(AMPhotoAlbum *album, BOOL *stop) {                
+            [[AMPhotoLibrary sharedPhotoLibrary] enumerateAlbums:^(AMPhotoAlbum *album, BOOL *stop) {
                 [tempArray addObject: album];
             } resultBlock:^(BOOL success, NSError *error) {
                 _photoAlbums = tempArray;
@@ -122,20 +126,36 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
 #pragma mark - AMPhotoLibraryChangeObserver
 - (void)photoLibraryDidChange:(AMPhotoChange *)changeInstance
 {
+    if ((nil == changeInstance) || (changeInstance.isAlbumCreated) || (changeInstance.isAlbumDeleted)) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self reloadAlbums];
+        });
+        return;
+    }
+
+    NSMutableArray *changedAlbums = [NSMutableArray array];
     [_photoAlbums enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         AMPhotoAlbum *photoAlbum = (AMPhotoAlbum *)obj;
-        AMPhotoChangeDetails* changeDetails = [changeInstance changeDetailsForObject:photoAlbum];
+        AMPhotoChangeDetails *changeDetails = [changeInstance changeDetailsForObject:photoAlbum];
         if (nil == changeDetails) {
             return;
         }
-        //For test
-        /*
-        id beforeObj = changeDetails.objectBeforeChanges;
-        id afterObj = changeDetails.objectAfterChanges;
-        BOOL wasDeleted = changeDetails.objectWasDeleted;
-        BOOL contentChanged = changeDetails.objectWasChanged;
-         */
+        
+        BOOL wasChanged = changeDetails.objectWasChanged;
+        if (wasChanged) {
+            id afterObj = changeDetails.objectAfterChanges;
+            [photoAlbum changed:afterObj];
+            NSInteger index = [_photoAlbums indexOfObject:photoAlbum];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+            [changedAlbums addObject:indexPath];
+        }
     }];
+    
+     dispatch_async(dispatch_get_main_queue(), ^{
+        if (changedAlbums.count > 0) {
+            [self.tableView reloadRowsAtIndexPaths:changedAlbums withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+    });
 }
 
 @end

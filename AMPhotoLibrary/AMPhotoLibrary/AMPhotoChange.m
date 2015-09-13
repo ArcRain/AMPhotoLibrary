@@ -30,6 +30,8 @@
     self = [super init];
     if (self) {
         _noteUserInfo = changeInfo;
+        _isAlbumCreated = NO;
+        _isAlbumDeleted = NO;
     }
     return self;
 }
@@ -46,11 +48,23 @@
     self = [super init];
     if (self) {
         _changeInstance = changeInstance;
+        _isAlbumCreated = NO;
+        _isAlbumDeleted = NO;
     }
     return self;
 }
 
 #endif
+
+- (void)setAlbumCreated:(BOOL)created
+{
+    _isAlbumCreated = created;
+}
+
+- (void)setAlbumDeleted:(BOOL)deleted
+{
+    _isAlbumDeleted = deleted;
+}
 
 - (AMPhotoChangeDetails *)changeDetailsForObject:(id)object
 {
@@ -59,11 +73,11 @@
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         if ([object isKindOfClass:[AMPhotoAsset class]]) {
             AMPhotoAsset *asset = (AMPhotoAsset *)object;
-            changeDetails = [AMPhotoChangeDetails changeDetailsWithPHObjectChangeDetails: [_changeInstance changeDetailsForObject:[asset asPHAsset]]];
+            changeDetails = [AMPhotoChangeDetails changeDetailsWithPHObjectChangeDetails:[_changeInstance changeDetailsForObject:[asset asPHAsset]] PHFetchResultChangeDetails:nil];
         }
         else if ([object isKindOfClass:[AMPhotoAlbum class]]) {
             AMPhotoAlbum *album = (AMPhotoAlbum *)object;
-            changeDetails = [AMPhotoChangeDetails changeDetailsWithPHObjectChangeDetails: [_changeInstance changeDetailsForObject:[album asPHAssetCollection]]];
+            changeDetails = [AMPhotoChangeDetails changeDetailsWithPHObjectChangeDetails:[_changeInstance changeDetailsForObject:[album asPHAssetCollection]] PHFetchResultChangeDetails:[_changeInstance changeDetailsForFetchResult:album.fetchResult]];
         }
     }
     else
@@ -81,24 +95,6 @@
     return changeDetails;
 }
 
-- (AMPhotoChangeDetails *)changeDetailsForFetchResult:(id)object
-{
-    AMPhotoChangeDetails *changeDetails = nil;
-    if ([object isKindOfClass:[AMPhotoAlbum class]]) {
-        AMPhotoAlbum *album = (AMPhotoAlbum *)object;
-#ifdef __AMPHOTOLIB_USE_PHOTO__
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-            changeDetails = [AMPhotoChangeDetails changeDetailsWithPHFetchResultChangeDetails: [_changeInstance changeDetailsForFetchResult:album.fetchResult]];
-        }
-        else
-#endif
-        {
-            changeDetails = [AMPhotoChangeDetails changeDetailsWithNotificationInfo: _noteUserInfo forObject:[album asALAssetsGroup]];
-        }
-    }
-    return changeDetails;
-}
-
 @end
 
 #pragma mark - AMPhotoChangeDetails
@@ -106,7 +102,7 @@
 {
 #ifdef __AMPHOTOLIB_USE_PHOTO__
     PHObjectChangeDetails *_changeDetails;
-    PHFetchResultChangeDetails *_fetchResultChangeDetails;
+    PHFetchResultChangeDetails *_resultChangeDetails;
 #endif
     
     NSDictionary *_userInfo;
@@ -137,38 +133,20 @@
 
 #ifdef __AMPHOTOLIB_USE_PHOTO__
 
-+ (instancetype)changeDetailsWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails
++ (instancetype)changeDetailsWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails PHFetchResultChangeDetails:(PHFetchResultChangeDetails *)resultChangeDetails
 {
-    if (nil == changeDetails) {
+    if ((nil == changeDetails) && (nil == resultChangeDetails)) {
         return nil;
     }
-    return [[[self class] alloc] initWithPHObjectChangeDetails: changeDetails];
+    return [[[self class] alloc] initWithPHObjectChangeDetails: changeDetails PHFetchResultChangeDetails:resultChangeDetails];
 }
 
-+ (instancetype)changeDetailsWithPHFetchResultChangeDetails:(PHFetchResultChangeDetails *)fetchResultChangeDetails
-{
-    if (nil == fetchResultChangeDetails) {
-        return nil;
-    }
-    return [[[self class] alloc] initWithPHFetchResultChangeDetails: fetchResultChangeDetails];
-}
-
-- (instancetype)initWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails
+- (instancetype)initWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails PHFetchResultChangeDetails:(PHFetchResultChangeDetails *)resultChangeDetails
 {
     self = [super init];
     if (self) {
         _changeDetails = changeDetails;
-        _fetchResultChangeDetails = nil;
-    }
-    return self;
-}
-
-- (instancetype)initWithPHFetchResultChangeDetails:(PHFetchResultChangeDetails *)fetchResultChangeDetails
-{
-    self = [super init];
-    if (self) {
-        _changeDetails = nil;
-        _fetchResultChangeDetails = fetchResultChangeDetails;
+        _resultChangeDetails = resultChangeDetails;
     }
     return self;
 }
@@ -181,9 +159,6 @@
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         if (nil != _changeDetails) {
             return _changeDetails.objectBeforeChanges;
-        }
-        else if (nil != _fetchResultChangeDetails) {
-            return _fetchResultChangeDetails.fetchResultBeforeChanges;
         }
         else {
             return nil;
@@ -203,9 +178,6 @@
         if (nil != _changeDetails) {
             return _changeDetails.objectAfterChanges;
         }
-        else if (nil != _fetchResultChangeDetails) {
-            return _fetchResultChangeDetails.fetchResultAfterChanges;
-        }
         else {
             return nil;
         }
@@ -223,10 +195,14 @@
 #ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
         if (nil != _changeDetails) {
+            //For asset
             wasChanged = _changeDetails.assetContentChanged;
+            //For collection property changed
+            wasChanged |= (_changeDetails.objectBeforeChanges != _changeDetails.objectAfterChanges);
         }
-        else if (nil != _fetchResultChangeDetails) {
-            wasChanged = (_fetchResultChangeDetails.fetchResultAfterChanges != _fetchResultChangeDetails.fetchResultBeforeChanges);
+        if (nil != _resultChangeDetails) {
+            //For assets in collection changed
+            wasChanged |= _resultChangeDetails.fetchResultBeforeChanges.count != _resultChangeDetails.fetchResultAfterChanges.count;
         }
     }
     else
@@ -259,7 +235,9 @@
     __block BOOL wasDeleted = NO;
 #ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        wasDeleted = _changeDetails.objectWasDeleted;
+        if (nil != _changeDetails) {
+            wasDeleted = _changeDetails.objectWasDeleted;
+        }
     }
     else
 #endif

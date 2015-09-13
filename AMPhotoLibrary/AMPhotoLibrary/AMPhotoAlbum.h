@@ -33,6 +33,7 @@ typedef void (^AMPhotoManagerAssetEnumerationBlock)(AMPhotoAsset *asset, NSUInte
 
 #endif
 
+- (void)changed:(id)afterChanges;
 - (void)enumerateAssets:(AMPhotoManagerAssetEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 
 @end

@@ -15,7 +15,9 @@
 
 // the object is AMPhotoAsset/AMPhotoAlbum
 - (AMPhotoChangeDetails *)changeDetailsForObject:(id)object;
-- (AMPhotoChangeDetails *)changeDetailsForFetchResult:(id)object;
+
+@property (atomic, assign, readonly) BOOL isAlbumCreated;
+@property (atomic, assign, readonly) BOOL isAlbumDeleted;
 
 @end
 

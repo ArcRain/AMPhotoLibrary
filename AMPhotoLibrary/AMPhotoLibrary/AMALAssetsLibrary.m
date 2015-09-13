@@ -312,7 +312,19 @@ enum {
 {
     AMPhotoChange *photoChange = nil;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0")) {
-        photoChange = [AMPhotoChange changeWithALChange: note.userInfo];
+        NSDictionary *userInfo = note.userInfo;
+        if (nil != userInfo) {
+            if ([userInfo allKeys].count == 0) {
+                return;
+            }
+            photoChange = [AMPhotoChange changeWithALChange: userInfo];
+            
+            NSSet *insertedAssetsGroups = userInfo[ALAssetLibraryInsertedAssetGroupsKey];
+            [photoChange setAlbumCreated:insertedAssetsGroups.count > 0];
+            
+            NSSet *deletedAssetsGroups = userInfo[ALAssetLibraryDeletedAssetGroupsKey];
+            [photoChange setAlbumDeleted:deletedAssetsGroups.count > 0];
+        }
     }
     
     [_changeObservers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {

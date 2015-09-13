@@ -16,6 +16,9 @@
 + (instancetype)changeWithPHChange:(PHChange *)changeInstance;
 #endif
 
+- (void)setAlbumCreated:(BOOL)created;
+- (void)setAlbumDeleted:(BOOL)deleted;
+
 @end
 
 #pragma mark - AMPhotoChangeDetails
@@ -24,8 +27,7 @@
 + (instancetype)changeDetailsWithNotificationInfo:(NSDictionary *)userInfo forObject:(NSObject *)object;
 
 #ifdef __AMPHOTOLIB_USE_PHOTO__
-+ (instancetype)changeDetailsWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails;
-+ (instancetype)changeDetailsWithPHFetchResultChangeDetails:(PHFetchResultChangeDetails *)fetchResultChangeDetails;
++ (instancetype)changeDetailsWithPHObjectChangeDetails:(PHObjectChangeDetails *)changeDetails PHFetchResultChangeDetails:(PHFetchResultChangeDetails *)fetchResultChangeDetails;
 #endif
 
 @end

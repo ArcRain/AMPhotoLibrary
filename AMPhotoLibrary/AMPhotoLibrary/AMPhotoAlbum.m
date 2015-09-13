@@ -13,6 +13,7 @@
     ALAssetsGroup *_assetsGroup;
 #ifdef __AMPHOTOLIB_USE_PHOTO__
     PHAssetCollection *_assetCollection;
+    PHFetchResult *_fetchResult;
 #endif
     
     BOOL _hasGotPosterImage;
@@ -64,28 +65,41 @@
     return _assetCollection;
 }
 
+- (PHFetchResult *)fetchResult
+{
+    if (nil == _fetchResult) {
+        _fetchResult = [PHAsset fetchAssetsInAssetCollection: _assetCollection options:nil];
+    }
+    return _fetchResult;
+}
+
 #endif
 
 - (void)commonInit
 {
-    _hasGotPosterImage = NO;
+    [self setNeedsUpdate];
+}
+
+- (NSString *)title
+{
+    NSString *title = @"";
 #ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        _title = _assetCollection.localizedTitle;
+        title = _assetCollection.localizedTitle;
     }
     else
 #endif
     {
-        _title = [_assetsGroup valueForProperty: ALAssetsGroupPropertyName];
+        title = [_assetsGroup valueForProperty: ALAssetsGroupPropertyName];
     }
+    return title;
 }
 
 - (NSInteger)numberOfAssets
 {
 #ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection: _assetCollection options:nil];
-        NSUInteger number = fetchResult.count;
+        NSUInteger number = self.fetchResult.count;
         if (NSNotFound == number) {
             return 0;
         }
@@ -107,8 +121,11 @@
         
 #ifdef __AMPHOTOLIB_USE_PHOTO__
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-            PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection: _assetCollection options:nil];
-            [fetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            NSEnumerationOptions options = 0;
+            if (PHAssetCollectionTypeSmartAlbum == self.asPHAssetCollection.assetCollectionType) {
+                options = NSEnumerationReverse;
+            }
+            [self.fetchResult enumerateObjectsWithOptions:options usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 AMPhotoAsset *photoAsset = [AMPhotoAsset photoAssetWithPHAsset: obj];
                 _posterImage = photoAsset.thumbnail;
                 *stop = YES;
@@ -123,13 +140,31 @@
     return _posterImage;
 }
 
+- (void)setNeedsUpdate
+{
+    _hasGotPosterImage = NO;
+    _posterImage = nil;
+#ifdef __AMPHOTOLIB_USE_PHOTO__
+    _fetchResult = nil;
+#endif
+}
+
+- (void)changed:(id)afterChanges
+{
+#ifdef __AMPHOTOLIB_USE_PHOTO__
+    if ([afterChanges isKindOfClass:[PHAssetCollection class]]) {
+        _assetCollection = afterChanges;
+    }
+#endif
+    [self setNeedsUpdate];
+}
+
 - (void)enumerateAssets:(AMPhotoManagerAssetEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
 #ifdef __AMPHOTOLIB_USE_PHOTO__
     __block BOOL isStop = NO;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-        _fetchResult = [PHAsset fetchAssetsInAssetCollection:_assetCollection options: nil];
-        [_fetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [self.fetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             if (enumerationBlock) {
                 AMPhotoAsset *photoAsset = [AMPhotoAsset photoAssetWithPHAsset: obj];
                 enumerationBlock(photoAsset, idx, stop);

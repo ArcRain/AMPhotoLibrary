@@ -14,6 +14,8 @@
 @interface AMPHPhotoLibrary () <PHPhotoLibraryChangeObserver>
 {
     NSMutableSet *_changeObservers;
+    
+    PHFetchResult *_albumFetchResult;
 }
 @end
 
@@ -150,8 +152,8 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
             break;
         }
         
-        PHFetchResult *albumResult = [PHAssetCollection fetchAssetCollectionsWithType: PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
-        [albumResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        _albumFetchResult = [PHAssetCollection fetchAssetCollectionsWithType: PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
+        [_albumFetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             if (enumerationBlock) {
                 AMPhotoAlbum *photoAlbum = [AMPhotoAlbum photoAlbumWithPHAssetCollection: obj];
                 enumerationBlock(photoAlbum, stop);
@@ -299,6 +301,11 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
 - (void)photoLibraryDidChange:(PHChange *)changeInstance
 {
     AMPhotoChange *photoChange = [AMPhotoChange changeWithPHChange: changeInstance];
+    
+    PHFetchResultChangeDetails *albumResultChangeDetails = [changeInstance changeDetailsForFetchResult:_albumFetchResult];
+    [photoChange setAlbumCreated: albumResultChangeDetails.insertedObjects.count > 0];
+    [photoChange setAlbumDeleted: albumResultChangeDetails.removedObjects.count > 0];
+    
     [_changeObservers enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
         id<AMPhotoLibraryChangeObserver> changeObserver = obj;
         [changeObserver photoLibraryDidChange: photoChange];
