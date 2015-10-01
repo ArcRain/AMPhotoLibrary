@@ -22,7 +22,7 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
 
 - (void)configData:(AMPhotoAlbum *)data
 {
-    self.textLabel.text = [NSString stringWithFormat:@"%@ - (%ld)", data.title, data.numberOfAssets];
+    self.textLabel.text = [NSString stringWithFormat:@"%@ - (%ld)", data.title, (long)data.numberOfAssets];
     self.imageView.image = data.posterImage;
     self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }

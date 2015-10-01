@@ -6,10 +6,12 @@
 //  Copyright (c) 2014 Sora Yang. All rights reserved.
 //
 
+@import MediaPlayer;
 #import "PhotoDetailViewController.h"
 
 @interface PhotoDetailViewController ()
 
+@property (nonatomic, strong) MPMoviePlayerController *videoController;
 @property (nonatomic, strong) UIImageView *imageView;
 
 @end
@@ -21,10 +23,22 @@
     // Do any additional setup after loading the view.
     self.view.backgroundColor = [UIColor whiteColor];
     
-    _imageView = [[UIImageView alloc] initWithFrame: self.view.bounds];
-    _imageView.contentMode = UIViewContentModeScaleAspectFit;
-    _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview: _imageView];
+    if (self.photoAsset.mediaType == AMAssetMediaTypeImage) {
+        _imageView = [[UIImageView alloc] initWithFrame: self.view.bounds];
+        _imageView.contentMode = UIViewContentModeScaleAspectFit;
+        _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        [self.view addSubview: _imageView];
+    }
+    else if (self.photoAsset.mediaType == AMAssetMediaTypeVideo) {
+        NSURL *url = self.photoAsset.assetURL;
+        _videoController = [[MPMoviePlayerController alloc] initWithContentURL:url];
+        [_videoController prepareToPlay];
+        CGRect frame = self.view.bounds;
+        frame.origin.y = self.navigationController.navigationBar.frame.origin.y + self.navigationController.navigationBar.frame.size.height;
+        frame.size.height -= frame.origin.y;
+        _videoController.view.frame = frame;
+        [self.view addSubview:_videoController.view];
+    }
     
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(didClickDelete)];
     self.navigationItem.rightBarButtonItem = rightItem;
@@ -38,14 +52,19 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear: animated];
-    self.imageView.image = self.photoAsset.fullScreenImage;
     
-    //If you want to get image in async mode, you can use this sample code.
-    /*
-    [AMPhotoAsset fetchAsset:self.photoAsset withImageType:AMAssetImageTypeFullScreen imageResult:^(UIImage *image) {
-        self.imageView.image = image;
-    }];
-     */
+    if (self.photoAsset.mediaType == AMAssetMediaTypeImage) {
+        self.imageView.image = self.photoAsset.fullScreenImage;
+        //If you want to get image in async mode, you can use this sample code.
+        /*
+         [AMPhotoAsset fetchAsset:self.photoAsset withImageType:AMAssetImageTypeFullScreen imageResult:^(UIImage *image) {
+         self.imageView.image = image;
+         }];
+         */
+    }
+    else if (self.photoAsset.mediaType == AMAssetMediaTypeVideo) {
+        [_videoController play];
+    }
 }
 
 - (void)didClickDelete

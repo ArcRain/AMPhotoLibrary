@@ -14,6 +14,7 @@ NSString *const PhotoAssetsViewCellReuseIdentifier = @"PhotoAssetsViewCell";
 
 @interface PhotoAssetsViewCell : UICollectionViewCell
 
+@property (nonatomic, strong) UILabel *duration;
 @property (nonatomic, strong) UIImageView *imageView;
 - (void)configData:(AMPhotoAsset *)data;
 
@@ -29,6 +30,14 @@ NSString *const PhotoAssetsViewCellReuseIdentifier = @"PhotoAssetsViewCell";
         _imageView.center = CGPointMake(frame.size.width * 0.5, frame.size.height * 0.5);
         _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self.contentView addSubview: _imageView];
+        
+        _duration = [[UILabel alloc] initWithFrame: CGRectMake(frame.size.width - 54, 4, 50, 20)];
+        _duration.backgroundColor = [UIColor clearColor];
+        _duration.hidden = YES;
+        _duration.textColor = [UIColor whiteColor];
+        _duration.textAlignment = NSTextAlignmentRight;
+        _duration.font = [UIFont systemFontOfSize:12.f];
+        [self.contentView addSubview:_duration];
     }
     return self;
 }
@@ -36,6 +45,19 @@ NSString *const PhotoAssetsViewCellReuseIdentifier = @"PhotoAssetsViewCell";
 - (void)configData:(AMPhotoAsset *)data
 {
     self.imageView.image = data.thumbnail;
+    if (data.mediaType == AMAssetMediaTypeVideo) {
+        long duration = data.duration;
+        long hour = duration / 3600;
+        long min = (duration - 3600 * hour) / 360;
+        long sec = (long)(data.duration) % 60;
+        _duration.text = [NSString stringWithFormat:@"%02ld:%02ld:%02ld", hour, min, sec];
+        _duration.hidden = NO;
+    }
+}
+
+- (void)prepareForReuse
+{
+    _duration.hidden = YES;
 }
 
 @end
