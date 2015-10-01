@@ -34,6 +34,7 @@
     NSMutableDictionary *_metaData;
     NSURL *_assetURL;
     NSString *_UTI;
+    NSString *_localIdentifier;
     
     UIImageOrientation _orientation;
     
@@ -417,7 +418,8 @@ enum {
                 [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                     _fileSize = imageData.length;
                     _UTI = dataUTI;
-                    _assetURL = [NSURL URLWithString: _phAsset.localIdentifier];
+                    _localIdentifier = _phAsset.localIdentifier;
+                    _assetURL = [info objectForKey:@"PHImageFileURLKey"];
                     _orientation = orientation;
                 }];
             }
@@ -434,7 +436,8 @@ enum {
                     [urlAsset.URL getResourceValue:&fileSize forKey:NSURLFileSizeKey error:nil];
                     _fileSize = [fileSize unsignedLongLongValue];
                     _UTI = CFBridgingRelease(UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)([urlAsset.URL pathExtension]), NULL));
-                    _assetURL = [NSURL URLWithString: _phAsset.localIdentifier];
+                    _localIdentifier = _phAsset.localIdentifier;
+                    _assetURL = urlAsset.URL;
                     
                     [assetReadLock lock];
                     [assetReadLock unlockWithCondition:kAMASSETMETADATA_ALLFINISHED];
@@ -451,6 +454,7 @@ enum {
             _fileSize = defaultRep.size;
             _UTI = defaultRep.UTI;
             _assetURL = [_alAsset valueForProperty: ALAssetPropertyAssetURL];
+            _localIdentifier = _assetURL.absoluteString;
             _orientation = (UIImageOrientation)_alAsset.defaultRepresentation.orientation;
         }
     }
