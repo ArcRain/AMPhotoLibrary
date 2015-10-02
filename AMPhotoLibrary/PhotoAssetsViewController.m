@@ -31,7 +31,7 @@ NSString *const PhotoAssetsViewCellReuseIdentifier = @"PhotoAssetsViewCell";
         _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [self.contentView addSubview: _imageView];
         
-        _duration = [[UILabel alloc] initWithFrame: CGRectMake(frame.size.width - 54, 4, 50, 20)];
+        _duration = [[UILabel alloc] initWithFrame: CGRectMake(frame.size.width - 64, 4, 60, 20)];
         _duration.backgroundColor = [UIColor clearColor];
         _duration.hidden = YES;
         _duration.textColor = [UIColor whiteColor];

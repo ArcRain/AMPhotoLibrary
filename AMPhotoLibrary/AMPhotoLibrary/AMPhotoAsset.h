@@ -50,12 +50,14 @@ typedef NS_ENUM(NSInteger, AMAssetMediaType) {
 - (PHAsset *)asPHAsset;
 #endif
 
++ (NSURL *)fetchPlayerItemURL:(AVPlayerItem *)playerItem;
+
 /*
  For Image: use rawData
- For Video: create NSFileHandle with rawDataURL
+ For Video: use playerItem, for URL use 'fetchPlayerItemURL'
  For iOS8 below: use assetRepresentation
  */
-+ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void(^)(NSData *rawData, NSURL *rawDataURL, ALAssetRepresentation *assetRepresentation))resultBlock;
++ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void(^)(NSData *rawData, AVPlayerItem *playerItem, ALAssetRepresentation *assetRepresentation))resultBlock;
 
 typedef NS_ENUM(NSInteger, AMAssetImageType) {
     AMAssetImageTypeThumbnail = 0,

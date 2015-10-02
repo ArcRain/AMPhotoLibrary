@@ -431,13 +431,17 @@ enum {
                 
                 NSConditionLock* assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
                 [[PHImageManager defaultManager] requestPlayerItemForVideo:_phAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
-                    AVURLAsset *urlAsset = (AVURLAsset *)playerItem.asset;
+                    NSURL *videoURL = [[self class] fetchPlayerItemURL:playerItem];
                     NSNumber *fileSize = nil;;
-                    [urlAsset.URL getResourceValue:&fileSize forKey:NSURLFileSizeKey error:nil];
-                    _fileSize = [fileSize unsignedLongLongValue];
-                    _UTI = CFBridgingRelease(UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)([urlAsset.URL pathExtension]), NULL));
+                    if ([videoURL getResourceValue:&fileSize forKey:NSURLFileSizeKey error:nil]) {
+                        _fileSize = [fileSize unsignedLongLongValue];
+                    }
+                    else {
+                        _fileSize = 0;
+                    }
+                    _UTI = CFBridgingRelease(UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)([videoURL pathExtension]), NULL));
                     _localIdentifier = _phAsset.localIdentifier;
-                    _assetURL = urlAsset.URL;
+                    _assetURL = videoURL;
                     
                     [assetReadLock lock];
                     [assetReadLock unlockWithCondition:kAMASSETMETADATA_ALLFINISHED];
@@ -460,7 +464,35 @@ enum {
     }
 }
 
-+ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void (^)(NSData *, NSURL *, ALAssetRepresentation *))resultBlock
++ (NSURL *)fetchPlayerItemURL:(AVPlayerItem *)playerItem
+{
+    AVAsset *videoAsset = playerItem.asset;
+    NSURL *videoURL = nil;
+    if ([videoAsset isKindOfClass:[AVURLAsset class]]) {
+        AVURLAsset *urlAsset = (AVURLAsset *)videoAsset;
+        videoURL = urlAsset.URL;
+    }
+    else if ([videoAsset isKindOfClass:[AVComposition class]]) {
+        AVComposition *composition = (AVComposition *)videoAsset;
+        AVCompositionTrack *videoTrack = nil;
+        for (AVCompositionTrack *track in composition.tracks) {
+            if ([track.mediaType isEqualToString:AVMediaTypeVideo]) {
+                videoTrack = track;
+                break;
+            }
+        }
+        if (nil != videoTrack) {
+            NSArray *segments = videoTrack.segments;
+            for (AVCompositionTrackSegment *segment in segments) {
+                videoURL = segment.sourceURL;
+                break;
+            }
+        }
+    }
+    return videoURL;
+}
+
++ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void (^)(NSData *, AVPlayerItem *, ALAssetRepresentation *))resultBlock
 {
 #ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
@@ -483,15 +515,19 @@ enum {
             request.networkAccessAllowed = YES;
             
             [[PHImageManager defaultManager] requestPlayerItemForVideo:asset.asPHAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
-                AVURLAsset *urlAsset = (AVURLAsset *)playerItem.asset;
-                resultBlock(nil, urlAsset.URL, nil);
+                resultBlock(nil, playerItem, nil);
             }];
         }
     }
     else
 #endif
     {
-        resultBlock(nil, nil, asset.asALAsset.defaultRepresentation);
+        AVPlayerItem *playerItem = nil;
+        if (AMAssetMediaTypeVideo == asset.mediaType) {
+            AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:asset.assetURL options:@{AVURLAssetPreferPreciseDurationAndTimingKey: @(NO)}];
+            playerItem = [AVPlayerItem playerItemWithAsset:urlAsset];
+        }
+        resultBlock(nil, playerItem, asset.asALAsset.defaultRepresentation);
     }
 }
 

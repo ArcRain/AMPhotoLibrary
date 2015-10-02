@@ -11,7 +11,7 @@
 
 @interface PhotoDetailViewController ()
 
-@property (nonatomic, strong) MPMoviePlayerController *videoController;
+@property (nonatomic, strong) AVPlayer *avPlayer;
 @property (nonatomic, strong) UIImageView *imageView;
 
 @end
@@ -30,14 +30,19 @@
         [self.view addSubview: _imageView];
     }
     else if (self.photoAsset.mediaType == AMAssetMediaTypeVideo) {
-        NSURL *url = self.photoAsset.assetURL;
-        _videoController = [[MPMoviePlayerController alloc] initWithContentURL:url];
-        [_videoController prepareToPlay];
-        CGRect frame = self.view.bounds;
-        frame.origin.y = self.navigationController.navigationBar.frame.origin.y + self.navigationController.navigationBar.frame.size.height;
-        frame.size.height -= frame.origin.y;
-        _videoController.view.frame = frame;
-        [self.view addSubview:_videoController.view];
+        
+        [AMPhotoAsset fetchAsset:self.photoAsset rawData:^(NSData *rawData, AVPlayerItem *playerItem, ALAssetRepresentation *assetRepresentation) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (nil != playerItem) {
+                        _avPlayer = [[AVPlayer alloc] initWithPlayerItem:playerItem];
+                        AVPlayerLayer *layer = [AVPlayerLayer playerLayerWithPlayer:self.avPlayer];
+                        layer.frame = self.view.bounds;
+                        layer.videoGravity=AVLayerVideoGravityResizeAspect;
+                        [self.view.layer addSublayer:layer];
+                        [self.avPlayer play];
+                    }
+                });
+        }];
     }
     
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(didClickDelete)];
@@ -61,9 +66,6 @@
          self.imageView.image = image;
          }];
          */
-    }
-    else if (self.photoAsset.mediaType == AMAssetMediaTypeVideo) {
-        [_videoController play];
     }
 }
 
