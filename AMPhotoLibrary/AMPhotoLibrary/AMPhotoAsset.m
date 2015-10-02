@@ -522,12 +522,13 @@ enum {
     else
 #endif
     {
+        ALAssetRepresentation *representation = asset.asALAsset.defaultRepresentation;
         AVPlayerItem *playerItem = nil;
         if (AMAssetMediaTypeVideo == asset.mediaType) {
-            AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:asset.assetURL options:@{AVURLAssetPreferPreciseDurationAndTimingKey: @(NO)}];
+            AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:representation.url options:@{AVURLAssetPreferPreciseDurationAndTimingKey: @(NO)}];
             playerItem = [AVPlayerItem playerItemWithAsset:urlAsset];
         }
-        resultBlock(nil, playerItem, asset.asALAsset.defaultRepresentation);
+        resultBlock(nil, playerItem, representation);
     }
 }
 
