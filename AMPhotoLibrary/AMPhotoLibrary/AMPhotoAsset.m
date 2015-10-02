@@ -456,10 +456,10 @@ enum {
         {
             ALAssetRepresentation *defaultRep = _alAsset.defaultRepresentation;
             _fileSize = defaultRep.size;
+            _orientation = (UIImageOrientation)defaultRep.orientation;
             _UTI = defaultRep.UTI;
-            _assetURL = [_alAsset valueForProperty: ALAssetPropertyAssetURL];
+            _assetURL = defaultRep.url;
             _localIdentifier = _assetURL.absoluteString;
-            _orientation = (UIImageOrientation)_alAsset.defaultRepresentation.orientation;
         }
     }
 }
@@ -525,7 +525,7 @@ enum {
         ALAssetRepresentation *representation = asset.asALAsset.defaultRepresentation;
         AVPlayerItem *playerItem = nil;
         if (AMAssetMediaTypeVideo == asset.mediaType) {
-            AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:representation.url options:@{AVURLAssetPreferPreciseDurationAndTimingKey: @(NO)}];
+            AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:representation.url options:@{AVURLAssetPreferPreciseDurationAndTimingKey: @NO}];
             playerItem = [AVPlayerItem playerItemWithAsset:urlAsset];
         }
         resultBlock(nil, playerItem, representation);
