@@ -237,6 +237,14 @@ enum {
     }
 }
 
+- (NSString *)localIdentifier
+{
+    if (!_hasGotInfo) {
+        [self getInfo];
+    }
+    return _localIdentifier;
+}
+
 - (NSURL *)assetURL
 {
     if (!_hasGotInfo) {
@@ -593,7 +601,7 @@ enum {
                         UIGraphicsEndImageContext();
                     }
                 }
-                resultBlock(result);
+                resultBlock(resultImage);
             }];
         }
         else {
