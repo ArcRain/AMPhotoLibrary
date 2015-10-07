@@ -30,6 +30,7 @@ typedef NS_ENUM(NSInteger, AMAssetMediaType) {
 @property (nonatomic, readonly, strong) UIImage *thumbnail;
 @property (nonatomic, readonly, strong) UIImage *aspectRatioThumbnail;
 @property (nonatomic, readonly, copy) NSString *UTI;
+@property (nonatomic, readonly, copy) NSString *mimeType;
 
 //Image Property
 /*

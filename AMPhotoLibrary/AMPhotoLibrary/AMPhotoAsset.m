@@ -34,6 +34,7 @@
     NSMutableDictionary *_metaData;
     NSURL *_assetURL;
     NSString *_UTI;
+    NSString *_mimeType;
     NSString *_localIdentifier;
     
     UIImageOrientation _orientation;
@@ -277,6 +278,14 @@ enum {
     return _UTI;
 }
 
+- (NSString *)mimeType
+{
+    if (!_hasGotInfo) {
+        [self getInfo];
+    }
+    return _mimeType;
+}
+
 - (UIImage *)thumbnail
 {
     if (!_hasGotThumbnail) {
@@ -469,6 +478,10 @@ enum {
             _assetURL = defaultRep.url;
             _localIdentifier = _assetURL.absoluteString;
         }
+    }
+    CFStringRef UTI = (__bridge CFStringRef)_UTI;
+    if (NULL != UTI) {
+        _mimeType = CFBridgingRelease(UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType));
     }
 }
 
