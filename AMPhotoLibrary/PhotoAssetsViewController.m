@@ -48,7 +48,7 @@ NSString *const PhotoAssetsViewCellReuseIdentifier = @"PhotoAssetsViewCell";
     if (data.mediaType == AMAssetMediaTypeVideo) {
         long duration = data.duration;
         long hour = duration / 3600;
-        long min = (duration - 3600 * hour) / 360;
+        long min = (duration - 3600 * hour) / 60;
         long sec = (long)(data.duration) % 60;
         _duration.text = [NSString stringWithFormat:@"%02ld:%02ld:%02ld", hour, min, sec];
         _duration.hidden = NO;
