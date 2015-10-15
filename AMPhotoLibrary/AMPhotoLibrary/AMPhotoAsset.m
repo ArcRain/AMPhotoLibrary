@@ -15,18 +15,6 @@
     PHAsset *_phAsset;
 #endif
     AMAssetMediaType _mediaType;
-    
-    BOOL _hasGotThumbnail;
-    UIImage *_thumbnailImage;
-    
-    BOOL _hasGotAspectRatioThumbnail;
-    UIImage *_aspectRatioThumbnailImage;
-    
-    BOOL _hasGotFullScreenImage;
-    UIImage *_fullScreenImage;
-    
-    BOOL _hasGotFullResolutionImage;
-    UIImage *_fullResolutionImage;
     unsigned long long _fileSize;
     
     BOOL _hasGotInfo;
@@ -93,10 +81,6 @@
 {
     _hasGotInfo = NO;
     _hasGotFullMetaData = NO;
-    _hasGotThumbnail = NO;
-    _hasGotAspectRatioThumbnail = NO;
-    _hasGotFullScreenImage = NO;
-    _hasGotFullResolutionImage = NO;
     _duration = 0.f;
     _orientation = UIImageOrientationUp;
     
@@ -288,68 +272,64 @@ enum {
 
 - (UIImage *)thumbnail
 {
-    if (!_hasGotThumbnail) {
-        _hasGotThumbnail = YES;
+    __block UIImage *image = nil;
 #ifdef __AMPHOTOLIB_USE_PHOTO__
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-            PHImageRequestOptions *request = [PHImageRequestOptions new];
-            request.resizeMode = PHImageRequestOptionsResizeModeFast;
-            request.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-            request.version = PHImageRequestOptionsVersionCurrent;
-            request.synchronous = YES;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        PHImageRequestOptions *request = [PHImageRequestOptions new];
+        request.resizeMode = PHImageRequestOptionsResizeModeFast;
+        request.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+        request.version = PHImageRequestOptionsVersionCurrent;
+        request.synchronous = YES;
+        
+        CGSize thumbsize = CGSizeMake(160, 160);
+        [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:thumbsize contentMode:PHImageContentModeAspectFill options:request resultHandler:^(UIImage *result, NSDictionary *info) {
             
-            CGSize thumbsize = CGSizeMake(160, 160);
-            [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:thumbsize contentMode:PHImageContentModeAspectFill options:request resultHandler:^(UIImage *result, NSDictionary *info) {
+            @autoreleasepool {
+                CGFloat minWidth = MIN(result.size.width, result.size.height);
+                CGPoint offset = CGPointMake((result.size.width - minWidth) * 0.5, (result.size.height - minWidth) * 0.5);
+                CGFloat scale = thumbsize.width / (minWidth * result.scale);
                 
-                @autoreleasepool {
-                    CGFloat minWidth = MIN(result.size.width, result.size.height);
-                    CGPoint offset = CGPointMake((result.size.width - minWidth) * 0.5, (result.size.height - minWidth) * 0.5);
-                    CGFloat scale = thumbsize.width / (minWidth * result.scale);
-                    
-                    UIGraphicsBeginImageContextWithOptions(thumbsize, NO, 1.f);
-                    CGContextRef contextRef = UIGraphicsGetCurrentContext();
-                    CGContextTranslateCTM(contextRef, 0, thumbsize.height);
-                    CGContextScaleCTM(contextRef, scale, -scale);
-                    CGContextDrawImage(contextRef, CGRectMake(-offset.x, -offset.y, result.size.width, result.size.height), result.CGImage);
-                    _thumbnailImage = UIGraphicsGetImageFromCurrentImageContext();
-                    UIGraphicsEndImageContext();
-                }
-                
-            }];
-        }
-        else
-#endif
-        {
-            _thumbnailImage = [UIImage imageWithCGImage: _alAsset.thumbnail];
-        }
+                UIGraphicsBeginImageContextWithOptions(thumbsize, NO, 1.f);
+                CGContextRef contextRef = UIGraphicsGetCurrentContext();
+                CGContextTranslateCTM(contextRef, 0, thumbsize.height);
+                CGContextScaleCTM(contextRef, scale, -scale);
+                CGContextDrawImage(contextRef, CGRectMake(-offset.x, -offset.y, result.size.width, result.size.height), result.CGImage);
+                image = UIGraphicsGetImageFromCurrentImageContext();
+                UIGraphicsEndImageContext();
+            }
+            
+        }];
     }
-    return _thumbnailImage;
+    else
+#endif
+    {
+        image = [UIImage imageWithCGImage: _alAsset.thumbnail];
+    }
+    return image;
 }
 
 - (UIImage *)aspectRatioThumbnail
 {
-    if (!_hasGotAspectRatioThumbnail) {
-        _hasGotAspectRatioThumbnail = YES;
+    __block UIImage *image = nil;
 #ifdef __AMPHOTOLIB_USE_PHOTO__
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-            PHImageRequestOptions *request = [PHImageRequestOptions new];
-            request.resizeMode = PHImageRequestOptionsResizeModeFast;
-            request.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
-            request.version = PHImageRequestOptionsVersionCurrent;
-            request.synchronous = YES;
-            
-            CGSize thumbsize = CGSizeMake(160, 160);
-            [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:thumbsize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
-                _aspectRatioThumbnailImage = result;
-            }];
-        }
-        else
-#endif
-        {
-            _aspectRatioThumbnailImage = [UIImage imageWithCGImage: _alAsset.aspectRatioThumbnail];
-        }
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        PHImageRequestOptions *request = [PHImageRequestOptions new];
+        request.resizeMode = PHImageRequestOptionsResizeModeFast;
+        request.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+        request.version = PHImageRequestOptionsVersionCurrent;
+        request.synchronous = YES;
+        
+        CGSize thumbsize = CGSizeMake(160, 160);
+        [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:thumbsize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
+            image = result;
+        }];
     }
-    return _aspectRatioThumbnailImage;
+    else
+#endif
+    {
+        image = [UIImage imageWithCGImage: _alAsset.aspectRatioThumbnail];
+    }
+    return image;
 }
 
 - (UIImage *)fullScreenImage
@@ -357,32 +337,30 @@ enum {
     if (AMAssetMediaTypeImage != _mediaType) {
         return nil;
     }
-    if (!_hasGotFullScreenImage) {
-        _hasGotFullScreenImage = YES;
+    __block UIImage *image = nil;
 #ifdef __AMPHOTOLIB_USE_PHOTO__
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-            PHImageRequestOptions *request = [PHImageRequestOptions new];
-            request.resizeMode = PHImageRequestOptionsResizeModeExact;
-            request.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
-            request.version = PHImageRequestOptionsVersionCurrent;
-            request.synchronous = YES;
-            
-            CGFloat scale = [UIScreen mainScreen].scale;
-            CGSize screenSize = [UIScreen mainScreen].bounds.size;
-            screenSize.width *= scale;
-            screenSize.height *= scale;
-            [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:screenSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
-                _fullScreenImage = result;
-            }];
-        }
-        else
-#endif
-        {
-            ALAssetRepresentation *defaultAssetRep = _alAsset.defaultRepresentation;
-            _fullScreenImage = [UIImage imageWithCGImage: defaultAssetRep.fullScreenImage scale:defaultAssetRep.scale orientation:(UIImageOrientation)defaultAssetRep.orientation];
-        }
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        PHImageRequestOptions *request = [PHImageRequestOptions new];
+        request.resizeMode = PHImageRequestOptionsResizeModeExact;
+        request.deliveryMode = PHImageRequestOptionsDeliveryModeOpportunistic;
+        request.version = PHImageRequestOptionsVersionCurrent;
+        request.synchronous = YES;
+        
+        CGFloat scale = [UIScreen mainScreen].scale;
+        CGSize screenSize = [UIScreen mainScreen].bounds.size;
+        screenSize.width *= scale;
+        screenSize.height *= scale;
+        [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:screenSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
+            image = result;
+        }];
     }
-    return _fullScreenImage;
+    else
+#endif
+    {
+        ALAssetRepresentation *defaultAssetRep = _alAsset.defaultRepresentation;
+        image = [UIImage imageWithCGImage: defaultAssetRep.fullScreenImage scale:defaultAssetRep.scale orientation:(UIImageOrientation)defaultAssetRep.orientation];
+    }
+    return image;
 }
 
 - (UIImage *)fullResolutionImage
@@ -390,28 +368,26 @@ enum {
     if (AMAssetMediaTypeImage != _mediaType) {
         return nil;
     }
-    if (!_hasGotFullResolutionImage) {
-        _hasGotFullResolutionImage = YES;
+    __block UIImage *image = nil;
 #ifdef __AMPHOTOLIB_USE_PHOTO__
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
-            PHImageRequestOptions *request = [PHImageRequestOptions new];
-            request.resizeMode = PHImageRequestOptionsResizeModeNone;
-            request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-            request.version = PHImageRequestOptionsVersionCurrent;
-            request.synchronous = YES;
-            
-            [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                _fullResolutionImage = [UIImage imageWithData: imageData];
-            }];
-        }
-        else
-#endif
-        {
-            ALAssetRepresentation *defaultAssetRep = _alAsset.defaultRepresentation;
-            _fullResolutionImage = [UIImage imageWithCGImage: defaultAssetRep.fullResolutionImage scale:defaultAssetRep.scale orientation:(UIImageOrientation)defaultAssetRep.orientation];
-        }
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        PHImageRequestOptions *request = [PHImageRequestOptions new];
+        request.resizeMode = PHImageRequestOptionsResizeModeNone;
+        request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        request.version = PHImageRequestOptionsVersionCurrent;
+        request.synchronous = YES;
+        
+        [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+            image = [UIImage imageWithData: imageData];
+        }];
     }
-    return _fullResolutionImage;
+    else
+#endif
+    {
+        ALAssetRepresentation *defaultAssetRep = _alAsset.defaultRepresentation;
+        image = [UIImage imageWithCGImage: defaultAssetRep.fullResolutionImage scale:defaultAssetRep.scale orientation:(UIImageOrientation)defaultAssetRep.orientation];
+    }
+    return image;
 }
 
 - (NSTimeInterval)duration
