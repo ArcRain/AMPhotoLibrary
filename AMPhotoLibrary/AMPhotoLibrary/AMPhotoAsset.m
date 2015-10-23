@@ -334,9 +334,6 @@ enum {
 
 - (UIImage *)fullScreenImage
 {
-    if (AMAssetMediaTypeImage != _mediaType) {
-        return nil;
-    }
     __block UIImage *image = nil;
 #ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
