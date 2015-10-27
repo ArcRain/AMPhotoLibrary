@@ -529,7 +529,7 @@ enum {
 + (void)fetchAsset:(AMPhotoAsset *)asset withImageType:(AMAssetImageType)imageType imageResult:(void (^)(UIImage *))resultBlock
 {
     if (AMAssetMediaTypeImage != asset.mediaType) {
-        if ((AMAssetImageTypeFullResolution == imageType) || (AMAssetImageTypeFullScreen == imageType)) {
+        if (AMAssetImageTypeFullResolution == imageType) {
             resultBlock(nil);
             return;
         }
@@ -579,12 +579,9 @@ enum {
                     @autoreleasepool {
                         CGFloat minWidth = MIN(result.size.width, result.size.height);
                         CGPoint offset = CGPointMake((result.size.width - minWidth) * 0.5, (result.size.height - minWidth) * 0.5);
-                        CGFloat scale = targetSize.width / (minWidth * result.scale);
                         
-                        UIGraphicsBeginImageContextWithOptions(targetSize, NO, 1.f);
+                        UIGraphicsBeginImageContextWithOptions(CGSizeMake(minWidth, minWidth), NO, 1.f);
                         CGContextRef contextRef = UIGraphicsGetCurrentContext();
-                        CGContextTranslateCTM(contextRef, 0, targetSize.height);
-                        CGContextScaleCTM(contextRef, scale, -scale);
                         CGContextDrawImage(contextRef, CGRectMake(-offset.x, -offset.y, result.size.width, result.size.height), result.CGImage);
                         resultImage = UIGraphicsGetImageFromCurrentImageContext();
                         UIGraphicsEndImageContext();
