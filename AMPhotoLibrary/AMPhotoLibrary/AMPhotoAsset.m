@@ -287,12 +287,11 @@ enum {
             @autoreleasepool {
                 CGFloat minWidth = MIN(result.size.width, result.size.height);
                 CGPoint offset = CGPointMake((result.size.width - minWidth) * 0.5, (result.size.height - minWidth) * 0.5);
-                CGFloat scale = thumbsize.width / (minWidth * result.scale);
                 
-                UIGraphicsBeginImageContextWithOptions(thumbsize, NO, 1.f);
+                UIGraphicsBeginImageContextWithOptions(CGSizeMake(minWidth, minWidth), NO, 1.f);
                 CGContextRef contextRef = UIGraphicsGetCurrentContext();
-                CGContextTranslateCTM(contextRef, 0, thumbsize.height);
-                CGContextScaleCTM(contextRef, scale, -scale);
+                CGContextTranslateCTM(contextRef, 0, minWidth);
+                CGContextScaleCTM(contextRef, 1.0, -1.0);
                 CGContextDrawImage(contextRef, CGRectMake(-offset.x, -offset.y, result.size.width, result.size.height), result.CGImage);
                 image = UIGraphicsGetImageFromCurrentImageContext();
                 UIGraphicsEndImageContext();
@@ -582,6 +581,8 @@ enum {
                         
                         UIGraphicsBeginImageContextWithOptions(CGSizeMake(minWidth, minWidth), NO, 1.f);
                         CGContextRef contextRef = UIGraphicsGetCurrentContext();
+                        CGContextTranslateCTM(contextRef, 0, minWidth);
+                        CGContextScaleCTM(contextRef, 1.0, -1.0);
                         CGContextDrawImage(contextRef, CGRectMake(-offset.x, -offset.y, result.size.width, result.size.height), result.CGImage);
                         resultImage = UIGraphicsGetImageFromCurrentImageContext();
                         UIGraphicsEndImageContext();
