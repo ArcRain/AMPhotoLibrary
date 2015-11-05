@@ -72,6 +72,8 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
         if (status == AMAuthorizationStatusAuthorized) {
             NSMutableArray *tempArray = [NSMutableArray array];
             [[AMPhotoLibrary sharedPhotoLibrary] enumerateAlbums:^(AMPhotoAlbum *album, BOOL *stop) {
+                //Set assets filter
+                [album setAssetsFilter:[AMAssetsFilter allImages]];
                 [tempArray addObject: album];
             } resultBlock:^(BOOL success, NSError *error) {
                 _photoAlbums = tempArray;

@@ -16,11 +16,22 @@ typedef void (^AMPhotoManagerCheckBlock)(AMPhotoAlbum *album, NSError *error);
 typedef void (^AMPhotoManagerAlbumEnumerationBlock)(AMPhotoAlbum *album, BOOL *stop);
 typedef void (^AMPhotoManagerAssetEnumerationBlock)(AMPhotoAsset *asset, NSUInteger index, BOOL *stop);
 
+@interface AMAssetsFilter : NSObject
+
++ (AMAssetsFilter *)allAssets;
++ (AMAssetsFilter *)allImages;
++ (AMAssetsFilter *)allVideos;
++ (AMAssetsFilter *)allAudios;
+
+@end
+
 @interface AMPhotoAlbum : NSObject
 
 @property (nonatomic, readonly, strong) NSString *title;
 @property (nonatomic, readonly, assign) NSInteger numberOfAssets;
 @property (nonatomic, readonly, strong) UIImage *posterImage;
+
+@property (nonatomic, strong) AMAssetsFilter *assetsFilter;
 
 + (AMPhotoAlbum *)photoAlbumWithALAssetsGroup:(ALAssetsGroup *)assetsGroup;
 - (ALAssetsGroup *)asALAssetsGroup;

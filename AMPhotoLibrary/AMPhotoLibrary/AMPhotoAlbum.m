@@ -8,6 +8,60 @@
 
 #import "AMPhotoAlbum.h"
 
+@interface AMAssetsFilter ()
+
+@property (nonatomic, assign) BOOL includeImage;
+@property (nonatomic, assign) BOOL includeVideo;
+@property (nonatomic, assign) BOOL includeAudio;
+
+@end
+
+@implementation AMAssetsFilter
+
++ (AMAssetsFilter *)allAssets
+{
+    AMAssetsFilter *filter = [[AMAssetsFilter alloc] init];
+    filter.includeImage = YES;
+    filter.includeVideo = YES;
+    filter.includeAudio = YES;
+    return filter;
+}
+
++ (AMAssetsFilter *)allImages
+{
+    AMAssetsFilter *filter = [[AMAssetsFilter alloc] init];
+    filter.includeImage = YES;
+    filter.includeVideo = NO;
+    filter.includeAudio = NO;
+    return filter;
+}
+
++ (AMAssetsFilter *)allVideos
+{
+    AMAssetsFilter *filter = [[AMAssetsFilter alloc] init];
+    filter.includeImage = NO;
+    filter.includeVideo = YES;
+    filter.includeAudio = NO;
+    return filter;
+}
+
++ (AMAssetsFilter *)allAudios
+{
+    AMAssetsFilter *filter = [[AMAssetsFilter alloc] init];
+    filter.includeImage = NO;
+    filter.includeVideo = NO;
+    filter.includeAudio = YES;
+    return filter;
+}
+
+- (BOOL)isEqual:(id)object
+{
+    AMAssetsFilter *filter = (AMAssetsFilter *)object;
+    return (self.includeImage == filter.includeImage) && (self.includeVideo == filter.includeVideo) && (self.includeAudio == filter.includeAudio);
+}
+
+@end
+
 @interface AMPhotoAlbum ()
 {
     ALAssetsGroup *_assetsGroup;
@@ -68,7 +122,30 @@
 - (PHFetchResult *)fetchResult
 {
     if (nil == _fetchResult) {
-        _fetchResult = [PHAsset fetchAssetsInAssetCollection: _assetCollection options:nil];
+        if (nil == self.assetsFilter) {
+            _fetchResult = [PHAsset fetchAssetsInAssetCollection: _assetCollection options:nil];
+        }
+        else {
+            NSString *queryString = @"";
+            if (self.assetsFilter.includeImage) {
+                queryString = [queryString stringByAppendingFormat:@"(mediaType == %ld)", (long)PHAssetMediaTypeImage];
+            }
+            if (self.assetsFilter.includeVideo) {
+                if (queryString.length > 0) {
+                    queryString = [queryString stringByAppendingString:@" || "];
+                }
+                queryString = [queryString stringByAppendingFormat:@"(mediaType == %ld)", (long)PHAssetMediaTypeVideo];
+            }
+            if (self.assetsFilter.includeAudio) {
+                if (queryString.length > 0) {
+                    queryString = [queryString stringByAppendingString:@" || "];
+                }
+                queryString = [queryString stringByAppendingFormat:@"(mediaType == %ld)", (long)PHAssetMediaTypeVideo];
+            }
+            PHFetchOptions *fetchOptions = [PHFetchOptions new];
+            fetchOptions.predicate = [NSPredicate predicateWithFormat:queryString];
+            _fetchResult = [PHAsset fetchAssetsInAssetCollection: _assetCollection options:fetchOptions];
+        }
     }
     return _fetchResult;
 }
@@ -138,6 +215,34 @@
         }
     }
     return _posterImage;
+}
+
+- (void)setAssetsFilter:(AMAssetsFilter *)assetsFilter
+{
+    if ([assetsFilter isEqual:_assetsFilter]) {
+        return;
+    }
+    _assetsFilter = assetsFilter;
+#ifdef __AMPHOTOLIB_USE_PHOTO__
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        _fetchResult = nil;
+    }
+    else
+#endif
+    {
+        if (nil == self.assetsFilter) {
+            [_assetsGroup setAssetsFilter:nil];
+        }
+        else if (self.assetsFilter.includeVideo && self.assetsFilter.includeImage) {
+            [_assetsGroup setAssetsFilter:[ALAssetsFilter allAssets]];
+        }
+        else if (self.assetsFilter.includeImage) {
+            [_assetsGroup setAssetsFilter:[ALAssetsFilter allPhotos]];
+        }
+        else if (self.assetsFilter.includeVideo) {
+            [_assetsGroup setAssetsFilter:[ALAssetsFilter allVideos]];
+        }
+    }
 }
 
 - (void)setNeedsUpdate
