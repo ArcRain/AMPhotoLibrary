@@ -8,6 +8,8 @@
 
 #import "AMPhotoAsset.h"
 
+#define AMPhotoAssetThumbnailSize CGSizeMake(160, 160)
+
 @interface AMPhotoAsset ()
 {
     ALAsset *_alAsset;
@@ -281,8 +283,7 @@ enum {
         request.version = PHImageRequestOptionsVersionCurrent;
         request.synchronous = YES;
         
-        CGSize thumbsize = CGSizeMake(160, 160);
-        [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:thumbsize contentMode:PHImageContentModeAspectFill options:request resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:AMPhotoAssetThumbnailSize contentMode:PHImageContentModeAspectFill options:request resultHandler:^(UIImage *result, NSDictionary *info) {
             
             @autoreleasepool {
                 CGFloat minWidth = MIN(result.size.width, result.size.height);
@@ -318,8 +319,7 @@ enum {
         request.version = PHImageRequestOptionsVersionCurrent;
         request.synchronous = YES;
         
-        CGSize thumbsize = CGSizeMake(160, 160);
-        [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:thumbsize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:AMPhotoAssetThumbnailSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
             image = result;
         }];
     }
@@ -551,7 +551,7 @@ enum {
             case AMAssetImageTypeAspectRatioThumbnail:
             {
                 request.resizeMode = PHImageRequestOptionsResizeModeFast;
-                targetSize = CGSizeMake(160, 160);
+                targetSize = AMPhotoAssetThumbnailSize;
             }
                 break;
             case AMAssetImageTypeFullScreen:
