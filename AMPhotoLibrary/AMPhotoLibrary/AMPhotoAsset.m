@@ -277,27 +277,19 @@ enum {
     __block UIImage *image = nil;
 #ifdef __AMPHOTOLIB_USE_PHOTO__
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        CGSize pixelSize = CGSizeMake(_phAsset.pixelWidth, _phAsset.pixelHeight);
+        CGFloat pixelWidth = MIN(pixelSize.width, pixelSize.height);
+        CGRect cropRect = CGRectMake((pixelSize.width - pixelWidth) * 0.5, (pixelSize.height - pixelWidth) * 0.5, pixelWidth, pixelWidth);
+        
         PHImageRequestOptions *request = [PHImageRequestOptions new];
-        request.resizeMode = PHImageRequestOptionsResizeModeFast;
+        request.resizeMode = PHImageRequestOptionsResizeModeExact;
         request.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
         request.version = PHImageRequestOptionsVersionCurrent;
+        request.normalizedCropRect = CGRectMake(cropRect.origin.x / pixelSize.width, cropRect.origin.y / pixelSize.height, cropRect.size.width / pixelSize.width, cropRect.size.height / pixelSize.height);
         request.synchronous = YES;
         
         [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:AMPhotoAssetThumbnailSize contentMode:PHImageContentModeAspectFill options:request resultHandler:^(UIImage *result, NSDictionary *info) {
-            
-            @autoreleasepool {
-                CGFloat minWidth = MIN(result.size.width, result.size.height);
-                CGPoint offset = CGPointMake((result.size.width - minWidth) * 0.5, (result.size.height - minWidth) * 0.5);
-                
-                UIGraphicsBeginImageContextWithOptions(CGSizeMake(minWidth, minWidth), NO, 1.f);
-                CGContextRef contextRef = UIGraphicsGetCurrentContext();
-                CGContextTranslateCTM(contextRef, 0, minWidth);
-                CGContextScaleCTM(contextRef, 1.0, -1.0);
-                CGContextDrawImage(contextRef, CGRectMake(-offset.x, -offset.y, result.size.width, result.size.height), result.CGImage);
-                image = UIGraphicsGetImageFromCurrentImageContext();
-                UIGraphicsEndImageContext();
-            }
-            
+            image = result;
         }];
     }
     else
@@ -544,14 +536,23 @@ enum {
         request.networkAccessAllowed = YES;
         
         CGSize targetSize = CGSizeZero;
-        BOOL needSquareCrop = NO;
         switch (imageType) {
             case AMAssetImageTypeThumbnail:
-                needSquareCrop = YES;
+            {
+                targetSize = AMPhotoAssetThumbnailSize;
+                CGSize pixelSize = asset.dimensions;
+                CGFloat pixelWidth = MIN(pixelSize.width, pixelSize.height);
+                CGRect cropRect = CGRectMake((pixelSize.width - pixelWidth) * 0.5, (pixelSize.height - pixelWidth) * 0.5, pixelWidth, pixelWidth);
+                request.normalizedCropRect = CGRectMake(cropRect.origin.x / pixelSize.width, cropRect.origin.y / pixelSize.height, cropRect.size.width / pixelSize.width, cropRect.size.height / pixelSize.height);
+                request.resizeMode = PHImageRequestOptionsResizeModeExact;
+                request.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
+                break;
+            }
             case AMAssetImageTypeAspectRatioThumbnail:
             {
-                request.resizeMode = PHImageRequestOptionsResizeModeFast;
                 targetSize = AMPhotoAssetThumbnailSize;
+                request.resizeMode = PHImageRequestOptionsResizeModeFast;
+                request.deliveryMode = PHImageRequestOptionsDeliveryModeFastFormat;
             }
                 break;
             case AMAssetImageTypeFullScreen:
@@ -573,22 +574,7 @@ enum {
         
         if (AMAssetImageTypeFullResolution != imageType) {
             [[PHImageManager defaultManager] requestImageForAsset:[asset asPHAsset] targetSize:targetSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
-                UIImage *resultImage = result;
-                if (needSquareCrop) {
-                    @autoreleasepool {
-                        CGFloat minWidth = MIN(result.size.width, result.size.height);
-                        CGPoint offset = CGPointMake((result.size.width - minWidth) * 0.5, (result.size.height - minWidth) * 0.5);
-                        
-                        UIGraphicsBeginImageContextWithOptions(CGSizeMake(minWidth, minWidth), NO, 1.f);
-                        CGContextRef contextRef = UIGraphicsGetCurrentContext();
-                        CGContextTranslateCTM(contextRef, 0, minWidth);
-                        CGContextScaleCTM(contextRef, 1.0, -1.0);
-                        CGContextDrawImage(contextRef, CGRectMake(-offset.x, -offset.y, result.size.width, result.size.height), result.CGImage);
-                        resultImage = UIGraphicsGetImageFromCurrentImageContext();
-                        UIGraphicsEndImageContext();
-                    }
-                }
-                resultBlock(resultImage);
+                resultBlock(result);
             }];
         }
         else {
