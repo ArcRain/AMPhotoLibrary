@@ -39,6 +39,7 @@ typedef NS_ENUM(NSInteger, AMAssetMediaType) {
 @property (nonatomic, readonly, assign) UIImageOrientation orientation;
 @property (nonatomic, readonly, strong) UIImage *fullScreenImage;
 @property (nonatomic, readonly, strong) UIImage *fullResolutionImage;
+@property (nonatomic, readonly, strong) NSData *imageFileData;
 
 //Video Property
 @property (nonatomic, readonly, assign) NSTimeInterval duration;

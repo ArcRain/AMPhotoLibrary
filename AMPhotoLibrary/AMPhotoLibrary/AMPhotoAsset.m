@@ -378,6 +378,38 @@ enum {
     return image;
 }
 
+- (NSData *)imageFileData {
+    if (AMAssetMediaTypeImage != _mediaType) {
+        return nil;
+    }
+    __block NSData *imageFileData = nil;
+#ifdef __AMPHOTOLIB_USE_PHOTO__
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO_8_0) {
+        PHImageRequestOptions *request = [PHImageRequestOptions new];
+        request.resizeMode = PHImageRequestOptionsResizeModeNone;
+        request.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        request.version = PHImageRequestOptionsVersionCurrent;
+        request.synchronous = YES;
+
+        [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+            imageFileData = imageData;
+        }];
+    }
+    else
+#endif
+        {
+        ALAssetRepresentation *defaultAssetRep = _alAsset.defaultRepresentation;
+        long long size = defaultAssetRep.size;
+
+        if (size > 0) {
+            uint8_t *tempData = malloc((uint8_t)size);
+            [defaultAssetRep getBytes:tempData fromOffset:0 length:(NSUInteger)size error:nil];
+            imageFileData = [NSData dataWithBytesNoCopy:tempData length:(NSUInteger)size freeWhenDone:YES];
+        }
+        }
+    return imageFileData;
+}
+
 - (NSTimeInterval)duration
 {
     return _duration;
