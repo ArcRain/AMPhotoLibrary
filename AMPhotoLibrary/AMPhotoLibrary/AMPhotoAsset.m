@@ -157,7 +157,7 @@ enum {
                 request.resizeMode = PHImageRequestOptionsResizeModeNone;
                 request.synchronous = YES;
                 
-                [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                [[PHCachingImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
                     if (NULL != source) {
                         _metaData = (NSMutableDictionary *)CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
@@ -172,7 +172,7 @@ enum {
                 request.networkAccessAllowed = YES;
                 
                 NSConditionLock* assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
-                [[PHImageManager defaultManager] requestPlayerItemForVideo:_phAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
+                [[PHCachingImageManager defaultManager] requestPlayerItemForVideo:_phAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
                     
                     _metaData = [NSMutableDictionary dictionary];
                     NSArray *commonMetaData = playerItem.asset.commonMetadata;
@@ -288,7 +288,7 @@ enum {
         request.normalizedCropRect = CGRectMake(cropRect.origin.x / pixelSize.width, cropRect.origin.y / pixelSize.height, cropRect.size.width / pixelSize.width, cropRect.size.height / pixelSize.height);
         request.synchronous = YES;
         
-        [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:AMPhotoAssetThumbnailSize contentMode:PHImageContentModeAspectFill options:request resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHCachingImageManager defaultManager] requestImageForAsset: _phAsset targetSize:AMPhotoAssetThumbnailSize contentMode:PHImageContentModeAspectFill options:request resultHandler:^(UIImage *result, NSDictionary *info) {
             image = result;
         }];
     }
@@ -311,7 +311,7 @@ enum {
         request.version = PHImageRequestOptionsVersionCurrent;
         request.synchronous = YES;
         
-        [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:AMPhotoAssetThumbnailSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHCachingImageManager defaultManager] requestImageForAsset: _phAsset targetSize:AMPhotoAssetThumbnailSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
             image = result;
         }];
     }
@@ -338,7 +338,7 @@ enum {
         CGSize screenSize = [UIScreen mainScreen].bounds.size;
         screenSize.width *= scale;
         screenSize.height *= scale;
-        [[PHImageManager defaultManager] requestImageForAsset: _phAsset targetSize:screenSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
+        [[PHCachingImageManager defaultManager] requestImageForAsset: _phAsset targetSize:screenSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
             image = result;
         }];
     }
@@ -365,7 +365,7 @@ enum {
         request.version = PHImageRequestOptionsVersionCurrent;
         request.synchronous = YES;
         
-        [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+        [[PHCachingImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
             image = [UIImage imageWithData: imageData];
         }];
     }
@@ -391,7 +391,7 @@ enum {
         request.version = PHImageRequestOptionsVersionCurrent;
         request.synchronous = YES;
 
-        [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+        [[PHCachingImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
             imageFileData = imageData;
         }];
     }
@@ -428,7 +428,7 @@ enum {
                 request.resizeMode = PHImageRequestOptionsResizeModeNone;
                 request.synchronous = YES;
                 
-                [[PHImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                [[PHCachingImageManager defaultManager] requestImageDataForAsset:_phAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                     _fileSize = imageData.length;
                     _UTI = dataUTI;
                     _localIdentifier = _phAsset.localIdentifier;
@@ -443,7 +443,7 @@ enum {
                 request.networkAccessAllowed = YES;
                 
                 NSConditionLock* assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
-                [[PHImageManager defaultManager] requestPlayerItemForVideo:_phAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
+                [[PHCachingImageManager defaultManager] requestPlayerItemForVideo:_phAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
                     NSURL *videoURL = [[self class] fetchPlayerItemURL:playerItem];
                     NSNumber *fileSize = nil;;
                     if ([videoURL getResourceValue:&fileSize forKey:NSURLFileSizeKey error:nil]) {
@@ -521,7 +521,7 @@ enum {
             request.synchronous = NO;
             request.networkAccessAllowed = YES;
             
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset.asPHAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+            [[PHCachingImageManager defaultManager] requestImageDataForAsset:asset.asPHAsset options: request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 resultBlock(imageData, nil, nil);
             }];
         }
@@ -531,7 +531,7 @@ enum {
             request.version = PHVideoRequestOptionsVersionCurrent;
             request.networkAccessAllowed = YES;
             
-            [[PHImageManager defaultManager] requestPlayerItemForVideo:asset.asPHAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
+            [[PHCachingImageManager defaultManager] requestPlayerItemForVideo:asset.asPHAsset options:request resultHandler:^(AVPlayerItem *playerItem, NSDictionary *info) {
                 resultBlock(nil, playerItem, nil);
             }];
         }
@@ -605,12 +605,12 @@ enum {
         }
         
         if (AMAssetImageTypeFullResolution != imageType) {
-            [[PHImageManager defaultManager] requestImageForAsset:[asset asPHAsset] targetSize:targetSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
+            [[PHCachingImageManager defaultManager] requestImageForAsset:[asset asPHAsset] targetSize:targetSize contentMode:PHImageContentModeAspectFit options:request resultHandler:^(UIImage *result, NSDictionary *info) {
                 resultBlock(result);
             }];
         }
         else {
-            [[PHImageManager defaultManager] requestImageDataForAsset:[asset asPHAsset] options:request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+            [[PHCachingImageManager defaultManager] requestImageDataForAsset:[asset asPHAsset] options:request resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 if (nil == imageData) {
                     resultBlock(nil);
                 }
