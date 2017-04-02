@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@class AMPhotoAlbum;
+@protocol AMPhotoAlbum;
 @interface PhotoAssetsViewController : UICollectionViewController
 
-@property (nonatomic, strong) AMPhotoAlbum *photoAlbum;
+@property (nonatomic, strong) id<AMPhotoAlbum> photoAlbum;
 
 @end

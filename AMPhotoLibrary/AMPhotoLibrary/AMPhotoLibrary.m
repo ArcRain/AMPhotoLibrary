@@ -99,7 +99,7 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
     [_photoManager enumerateAlbums: enumerationBlock resultBlock: resultBlock];
 }
 
-- (void)addAsset:(AMPhotoAsset *)asset toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
+- (void)addAsset:(id<AMPhotoAsset>)asset toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
     [_photoManager addAsset:asset toAlbum:photoAlbum resultBlock:resultBlock];
 }
@@ -119,7 +119,7 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
     [_photoManager writeImageToSavedPhotosAlbum: image resultBlock: resultBlock];
 }
 
-- (void)writeImage:(UIImage *)image toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
+- (void)writeImage:(UIImage *)image toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
     [_photoManager writeImage: image toAlbum: photoAlbum resultBlock: resultBlock];
 }
@@ -129,7 +129,7 @@ static AMPhotoLibrary *s_sharedPhotoLibrary = nil;
     [_photoManager writeImageDataToSavedPhotosAlbum: imageData metadata:metadata resultBlock: resultBlock];
 }
 
-- (void)writeImageData:(NSData *)imageData metadata:(NSDictionary *)metadata toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
+- (void)writeImageData:(NSData *)imageData metadata:(NSDictionary *)metadata toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
     [_photoManager writeImageData:imageData metadata:metadata toAlbum:photoAlbum resultBlock:resultBlock];
 }

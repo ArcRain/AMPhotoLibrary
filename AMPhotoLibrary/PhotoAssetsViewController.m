@@ -16,7 +16,7 @@ NSString *const PhotoAssetsViewCellReuseIdentifier = @"PhotoAssetsViewCell";
 
 @property (nonatomic, strong) UILabel *duration;
 @property (nonatomic, strong) UIImageView *imageView;
-- (void)configData:(AMPhotoAsset *)data;
+- (void)configData:(id<AMPhotoAsset>)data;
 
 @end
 
@@ -42,7 +42,7 @@ NSString *const PhotoAssetsViewCellReuseIdentifier = @"PhotoAssetsViewCell";
     return self;
 }
 
-- (void)configData:(AMPhotoAsset *)data
+- (void)configData:(id<AMPhotoAsset>)data
 {
     self.imageView.image = data.thumbnail;
     if (data.mediaType == AMAssetMediaTypeVideo) {
@@ -98,7 +98,7 @@ static NSString * const reuseIdentifier = @"UICollectionViewCell";
     [super viewWillAppear: animated];
     
     NSMutableArray *tempArray = [NSMutableArray array];
-    [self.photoAlbum enumerateAssets:^(AMPhotoAsset *asset, NSUInteger index, BOOL *stop) {
+    [self.photoAlbum enumerateAssets:^(id<AMPhotoAsset> asset, NSUInteger index, BOOL *stop) {
         [tempArray addObject: asset];
     } resultBlock:^(BOOL success, NSError *error) {
         _photoAssets = tempArray;
@@ -142,7 +142,7 @@ static NSString * const reuseIdentifier = @"UICollectionViewCell";
     PhotoAssetsViewCell *cell = (PhotoAssetsViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:PhotoAssetsViewCellReuseIdentifier forIndexPath:indexPath];
     
     // Configure the cell
-    AMPhotoAsset *asset = (AMPhotoAsset *)_photoAssets[indexPath.item];
+    id<AMPhotoAsset> asset = _photoAssets[indexPath.item];
     [cell configData: asset];
     
     //If you want to get image in async mode, you can use this sample code.
@@ -161,7 +161,7 @@ static NSString * const reuseIdentifier = @"UICollectionViewCell";
 #pragma mark <UICollectionViewDelegate>
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    AMPhotoAsset *asset = (AMPhotoAsset *)_photoAssets[indexPath.item];
+    id<AMPhotoAsset> asset = _photoAssets[indexPath.item];
     PhotoDetailViewController *detailViewController = [PhotoDetailViewController new];
     detailViewController.photoAsset = asset;
     [self.navigationController pushViewController: detailViewController animated:YES];

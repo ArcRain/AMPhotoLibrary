@@ -8,21 +8,22 @@
 
 #import <Foundation/Foundation.h>
 
-@class AMPhotoChangeDetails;
+@protocol AMPhotoChangeDetails;
 
 #pragma mark - AMPhotoChange
-@interface AMPhotoChange : NSObject
+@protocol AMPhotoChange<NSObject>
 
-// the object is AMPhotoAsset/AMPhotoAlbum
-- (AMPhotoChangeDetails *)changeDetailsForObject:(id)object;
-
+@required
 @property (atomic, assign, readonly) BOOL isAlbumCreated;
 @property (atomic, assign, readonly) BOOL isAlbumDeleted;
+
+// the object is AMPhotoAsset/AMPhotoAlbum
+- (id<AMPhotoChangeDetails>)changeDetailsForObject:(id)object;
 
 @end
 
 #pragma mark - AMPhotoChangeDetails
-@interface AMPhotoChangeDetails : NSObject
+@protocol AMPhotoChangeDetails<NSObject>
 
 // the object in the state before this change (returns the object that was passed in to changeDetailsForObject:)
 @property (atomic, strong, readonly) id objectBeforeChanges;

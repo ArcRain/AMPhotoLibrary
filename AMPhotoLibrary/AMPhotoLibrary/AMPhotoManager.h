@@ -12,9 +12,24 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
+#ifdef __IPHONE_8_0
+    #import <Photos/Photos.h>
+    #ifndef __AMPHOTOLIB_USE_PHOTO__
+        #define __AMPHOTOLIB_USE_PHOTO__
+    #endif
+#endif
+
+/*
+//Only ALAssetsLibrary without __AMPHOTOLIB_USE_PHOTO__
+#ifdef __AMPHOTOLIB_USE_PHOTO__
+#undef __AMPHOTOLIB_USE_PHOTO__
+#endif
+ */
+
 #import "AMPhotoAsset.h"
 #import "AMPhotoAlbum.h"
 #import "AMPhotoChange.h"
+#import "AMPhotoAssetUtility.h"
 
 typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
     AMAuthorizationStatusNotDetermined = 0, // User has not yet made a choice with regards to this application
@@ -29,7 +44,7 @@ typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
 @protocol AMPhotoLibraryChangeObserver <NSObject>
 
 @optional
-- (void)photoLibraryDidChange:(AMPhotoChange *)changeInstance;
+- (void)photoLibraryDidChange:(id<AMPhotoChange>)changeInstance;
 
 @end
 
@@ -42,7 +57,6 @@ typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
 
 @required
 
-//AuthorizationStatus check
 + (AMAuthorizationStatus)authorizationStatus;
 + (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler;
 
@@ -54,15 +68,15 @@ typedef NS_ENUM(NSUInteger, AMAuthorizationStatus) {
 
 - (void)enumerateAlbums:(AMPhotoManagerAlbumEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 
-- (void)addAsset:(AMPhotoAsset *)asset toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock;
+- (void)addAsset:(id<AMPhotoAsset>)asset toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 - (void)deleteAssets:(NSArray *)assets resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 - (void)deleteAlbums:(NSArray *)albums resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 
 - (void)writeImageToSavedPhotosAlbum:(UIImage *)image resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 - (void)writeImageDataToSavedPhotosAlbum:(NSData *)imageData metadata:(NSDictionary *)metadata resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 
-- (void)writeImage:(UIImage *)image toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock;
-- (void)writeImageData:(NSData *)imageData metadata:(NSDictionary *)metadata toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock;
+- (void)writeImage:(UIImage *)image toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock;
+- (void)writeImageData:(NSData *)imageData metadata:(NSDictionary *)metadata toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 
 - (void)writeVideoAtPathToSavedPhotosAlbum:(NSString *)filePath resultBlock:(AMPhotoManagerResultBlock)resultBlock;
 

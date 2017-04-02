@@ -6,28 +6,21 @@
 //  Copyright (c) 2014 Sora Yang. All rights reserved.
 //
 
+#import "AMPHChange.h"
+#import "AMPHAlbum.h"
 #import "AMPHPhotoLibrary.h"
-#import "AMPhotoChange_Private.h"
-
-#ifdef __AMPHOTOLIB_USE_PHOTO__
 
 @interface AMPHPhotoLibrary () <PHPhotoLibraryChangeObserver>
 {
     NSMutableSet *_changeObservers;
-    
     PHFetchResult *_albumFetchResult;
 }
 @end
 
-#endif
-
-#ifdef __AMPHOTOLIB_USE_PHOTO__
-
 @implementation AMPHPhotoLibrary
 
 static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
-+ (id<AMPhotoManager>)sharedPhotoManager
-{
++ (id<AMPhotoManager>)sharedPhotoManager {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         s_sharedPhotoManager = [AMPHPhotoLibrary new];
@@ -35,8 +28,7 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     return s_sharedPhotoManager;
 }
 
-+ (AMAuthorizationStatus)authorizationStatusFromPHAuthorizationStatus:(PHAuthorizationStatus)authorizationStatus
-{
++ (AMAuthorizationStatus)authorizationStatusFromPHAuthorizationStatus:(PHAuthorizationStatus)authorizationStatus {
     AMAuthorizationStatus authStatus = AMAuthorizationStatusNotDetermined;
     switch (authorizationStatus) {
         case PHAuthorizationStatusRestricted:
@@ -56,13 +48,11 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     return authStatus;
 }
 
-+ (AMAuthorizationStatus)authorizationStatus
-{
++ (AMAuthorizationStatus)authorizationStatus {
     return [[self class] authorizationStatusFromPHAuthorizationStatus:[PHPhotoLibrary authorizationStatus]];
 }
 
-+ (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler
-{
++ (void)requestAuthorization:(void(^)(AMAuthorizationStatus status))handler {
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         if (handler) {
             handler([[self class] authorizationStatusFromPHAuthorizationStatus: status]);
@@ -70,15 +60,13 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [[PHPhotoLibrary sharedPhotoLibrary] unregisterChangeObserver:self];
     [_changeObservers removeAllObjects];
     _changeObservers = nil;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
         [[PHPhotoLibrary sharedPhotoLibrary] registerChangeObserver:self];
@@ -86,26 +74,22 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     return self;
 }
 
-- (NSMutableSet *)changeObservers
-{
+- (NSMutableSet *)changeObservers {
     if (nil == _changeObservers) {
         _changeObservers = [NSMutableSet new];
     }
     return _changeObservers;
 }
 
-- (void)registerChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer
-{
+- (void)registerChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer {
     [self.changeObservers addObject: observer];
 }
 
-- (void)unregisterChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer
-{
+- (void)unregisterChangeObserver:(id<AMPhotoLibraryChangeObserver>)observer {
     [self.changeObservers removeObject: observer];
 }
 
-- (void)createAlbum:(NSString *)title resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
+- (void)createAlbum:(NSString *)title resultBlock:(AMPhotoManagerResultBlock)resultBlock {
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle: title];
     } completionHandler:^(BOOL success, NSError *error) {
@@ -115,10 +99,9 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)checkAlbum:(NSString *)title resultBlock:(AMPhotoManagerCheckBlock)resultBlock
-{
-    __block AMPhotoAlbum *foundAlbum = nil;
-    [self enumerateAlbums:^(AMPhotoAlbum *album, BOOL *stop) {
+- (void)checkAlbum:(NSString *)title resultBlock:(AMPhotoManagerCheckBlock)resultBlock {
+    __block id<AMPhotoAlbum> foundAlbum = nil;
+    [self enumerateAlbums:^(id<AMPhotoAlbum> album, BOOL *stop) {
         if ([album.title isEqualToString: title]) {
             foundAlbum = album;
             *stop = YES;
@@ -130,8 +113,7 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)enumerateAlbums:(AMPhotoManagerAlbumEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
+- (void)enumerateAlbums:(AMPhotoManagerAlbumEnumerationBlock)enumerationBlock resultBlock:(AMPhotoManagerResultBlock)resultBlock {
     void (^notifyResult)(BOOL success, NSError *error) = ^(BOOL success, NSError *error) {
         if (resultBlock) {
             resultBlock(success, error);
@@ -143,7 +125,7 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
         PHFetchResult *smartAlbumResult = [PHAssetCollection fetchAssetCollectionsWithType: PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
         [smartAlbumResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             if (enumerationBlock) {
-                AMPhotoAlbum *photoAlbum = [AMPhotoAlbum photoAlbumWithPHAssetCollection: obj];
+                id<AMPhotoAlbum> photoAlbum = [AMPHAlbum photoAlbumWithPHAssetCollection: obj];
                 enumerationBlock(photoAlbum, stop);
                 isStop = *stop;
             }
@@ -155,7 +137,7 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
         _albumFetchResult = [PHAssetCollection fetchAssetCollectionsWithType: PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAny options:nil];
         [_albumFetchResult enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             if (enumerationBlock) {
-                AMPhotoAlbum *photoAlbum = [AMPhotoAlbum photoAlbumWithPHAssetCollection: obj];
+                id<AMPhotoAlbum> photoAlbum = [AMPHAlbum photoAlbumWithPHAssetCollection: obj];
                 enumerationBlock(photoAlbum, stop);
                 isStop = *stop;
             }
@@ -164,11 +146,12 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     notifyResult(YES, nil);
 }
 
-- (void)addAsset:(AMPhotoAsset *)asset toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
+- (void)addAsset:(id<AMPhotoAsset>)asset toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock {
+    PHAssetCollection *collection = photoAlbum.wrappedInstance;
+    PHAsset *phAsset = asset.wrappedInstance;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
-        PHAssetCollectionChangeRequest *collectionRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection: [photoAlbum asPHAssetCollection]];
-        [collectionRequest addAssets: @[[asset asPHAsset]]];
+        PHAssetCollectionChangeRequest *collectionRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection: collection];
+        [collectionRequest addAssets: @[phAsset]];
     } completionHandler:^(BOOL success, NSError *error) {
         if (resultBlock) {
             resultBlock(success, error);
@@ -176,11 +159,10 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)deleteAssets:(NSArray *)assets resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
+- (void)deleteAssets:(NSArray *)assets resultBlock:(AMPhotoManagerResultBlock)resultBlock {
     NSMutableArray *deleteAssets = [NSMutableArray array];
-    for (AMPhotoAsset *asset in assets) {
-        [deleteAssets addObject:[asset asPHAsset]];
+    for (id<AMPhotoAsset> asset in assets) {
+        [deleteAssets addObject:asset.wrappedInstance];
     }
     if (0 == deleteAssets.count) {
         if (resultBlock) {
@@ -198,11 +180,10 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)deleteAlbums:(NSArray *)albums resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
+- (void)deleteAlbums:(NSArray *)albums resultBlock:(AMPhotoManagerResultBlock)resultBlock {
     NSMutableArray *deleteAlbums = [NSMutableArray array];
-    for (AMPhotoAlbum *album in albums) {
-        [deleteAlbums addObject:[album asPHAssetCollection]];
+    for (id<AMPhotoAlbum> album in albums) {
+        [deleteAlbums addObject:album.wrappedInstance];
     }
     if (0 == deleteAlbums.count) {
         if (resultBlock) {
@@ -220,8 +201,7 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)writeImageToSavedPhotosAlbum:(UIImage *)image resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
+- (void)writeImageToSavedPhotosAlbum:(UIImage *)image resultBlock:(AMPhotoManagerResultBlock)resultBlock {
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetChangeRequest creationRequestForAssetFromImage: image];
     } completionHandler:^(BOOL success, NSError *error) {
@@ -231,11 +211,11 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)writeImage:(UIImage *)image toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
+- (void)writeImage:(UIImage *)image toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock {
+    PHAssetCollection *collection = photoAlbum.wrappedInstance;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage: image];
-        PHAssetCollectionChangeRequest *collectionRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection: [photoAlbum asPHAssetCollection]];
+        PHAssetCollectionChangeRequest *collectionRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection: collection];
         [collectionRequest addAssets: @[assetRequest.placeholderForCreatedAsset]];
     } completionHandler:^(BOOL success, NSError *error) {
         if (resultBlock) {
@@ -244,8 +224,7 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (UIImage *)imageWithData:(NSData *)imageData metadata:(NSDictionary *)metadata
-{
+- (UIImage *)imageWithData:(NSData *)imageData metadata:(NSDictionary *)metadata {
     CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
     NSMutableDictionary *source_metadata = (NSMutableDictionary *)CFBridgingRelease(CGImageSourceCopyProperties(source, NULL));
     [source_metadata addEntriesFromDictionary: metadata];
@@ -260,8 +239,7 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     return [UIImage imageWithData: dest_data];
 }
 
-- (void)writeImageDataToSavedPhotosAlbum:(NSData *)imageData metadata:(NSDictionary *)metadata resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
+- (void)writeImageDataToSavedPhotosAlbum:(NSData *)imageData metadata:(NSDictionary *)metadata resultBlock:(AMPhotoManagerResultBlock)resultBlock {
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         UIImage *image = [self imageWithData: imageData metadata:metadata];
         [PHAssetChangeRequest creationRequestForAssetFromImage: image];
@@ -272,12 +250,11 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)writeImageData:(NSData *)imageData metadata:(NSDictionary *)metadata toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
+- (void)writeImageData:(NSData *)imageData metadata:(NSDictionary *)metadata toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock {
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         UIImage *image = [self imageWithData: imageData metadata:metadata];
         PHAssetChangeRequest *assetRequest = [PHAssetChangeRequest creationRequestForAssetFromImage: image];
-        PHAssetCollectionChangeRequest *collectionRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection: [photoAlbum asPHAssetCollection]];
+        PHAssetCollectionChangeRequest *collectionRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection: photoAlbum.wrappedInstance];
         [collectionRequest addAssets: @[assetRequest.placeholderForCreatedAsset]];
     } completionHandler:^(BOOL success, NSError *error) {
         if (resultBlock) {
@@ -286,8 +263,7 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
     }];
 }
 
-- (void)writeVideoAtPathToSavedPhotosAlbum:(NSString *)filePath resultBlock:(AMPhotoManagerResultBlock)resultBlock
-{
+- (void)writeVideoAtPathToSavedPhotosAlbum:(NSString *)filePath resultBlock:(AMPhotoManagerResultBlock)resultBlock {
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:[NSURL fileURLWithPath:filePath]];
     } completionHandler:^(BOOL success, NSError *error) {
@@ -298,9 +274,8 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
 }
 
 #pragma mark - PHPhotoLibraryChangeObserver
-- (void)photoLibraryDidChange:(PHChange *)changeInstance
-{
-    AMPhotoChange *photoChange = [AMPhotoChange changeWithPHChange: changeInstance];
+- (void)photoLibraryDidChange:(PHChange *)changeInstance {
+    AMPHChange *photoChange = [AMPHChange changeWithPHChange: changeInstance];
     
     PHFetchResultChangeDetails *albumResultChangeDetails = [changeInstance changeDetailsForFetchResult:_albumFetchResult];
     [photoChange setAlbumCreated: albumResultChangeDetails.insertedObjects.count > 0];
@@ -313,5 +288,3 @@ static AMPHPhotoLibrary *s_sharedPhotoManager = nil;
 }
 
 @end
-
-#endif

@@ -31,7 +31,7 @@
     }
     else if (self.photoAsset.mediaType == AMAssetMediaTypeVideo) {
         
-        [AMPhotoAsset fetchAsset:self.photoAsset rawData:^(NSData *rawData, AVPlayerItem *playerItem, ALAssetRepresentation *assetRepresentation) {
+        [AMPhotoAssetUtility fetchAsset:self.photoAsset rawData:^(NSData *rawData, AVPlayerItem *playerItem) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (nil != playerItem) {
                         _avPlayer = [[AVPlayer alloc] initWithPlayerItem:playerItem];

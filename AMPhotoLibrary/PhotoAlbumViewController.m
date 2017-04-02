@@ -14,13 +14,13 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
 
 @interface PhotoAlbumViewCell : UITableViewCell
 
-- (void)configData:(AMPhotoAlbum *)data;
+- (void)configData:(id<AMPhotoAlbum>)data;
 
 @end
 
 @implementation PhotoAlbumViewCell
 
-- (void)configData:(AMPhotoAlbum *)data
+- (void)configData:(id<AMPhotoAlbum>)data
 {
     self.textLabel.text = [NSString stringWithFormat:@"%@ - (%ld)", data.title, (long)data.numberOfAssets];
     self.imageView.image = data.posterImage;
@@ -71,7 +71,7 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
     [AMPhotoLibrary requestAuthorization:^(AMAuthorizationStatus status) {
         if (status == AMAuthorizationStatusAuthorized) {
             NSMutableArray *tempArray = [NSMutableArray array];
-            [[AMPhotoLibrary sharedPhotoLibrary] enumerateAlbums:^(AMPhotoAlbum *album, BOOL *stop) {
+            [[AMPhotoLibrary sharedPhotoLibrary] enumerateAlbums:^(id<AMPhotoAlbum>album, BOOL *stop) {
                 //Set assets filter
                 [album setAssetsFilter:[AMAssetsFilter allImages]];
                 [tempArray addObject: album];
@@ -102,7 +102,7 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
     PhotoAlbumViewCell *cell = (PhotoAlbumViewCell *)[tableView dequeueReusableCellWithIdentifier:PhotoAlbumViewCellReuseIdentifier forIndexPath:indexPath];
     
     // Configure the cell...
-    AMPhotoAlbum *albumData = _photoAlbums[indexPath.row];
+    id<AMPhotoAlbum> albumData = _photoAlbums[indexPath.row];
     [cell configData: albumData];
     
     return cell;
@@ -119,14 +119,14 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
     flowLayout.minimumInteritemSpacing = 2.f;
     flowLayout.minimumLineSpacing = 2.f;
     
-    AMPhotoAlbum *albumData = _photoAlbums[indexPath.row];
+    id<AMPhotoAlbum> albumData = _photoAlbums[indexPath.row];
     PhotoAssetsViewController *viewController = [[PhotoAssetsViewController alloc] initWithCollectionViewLayout:flowLayout];
     viewController.photoAlbum = albumData;
     [self.navigationController pushViewController: viewController animated:YES];
 }
 
 #pragma mark - AMPhotoLibraryChangeObserver
-- (void)photoLibraryDidChange:(AMPhotoChange *)changeInstance
+- (void)photoLibraryDidChange:(id<AMPhotoChange>)changeInstance
 {
     if ((nil == changeInstance) || (changeInstance.isAlbumCreated) || (changeInstance.isAlbumDeleted)) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -137,8 +137,8 @@ NSString *const PhotoAlbumViewCellReuseIdentifier = @"PhotoAlbumViewCell";
 
     NSMutableArray *changedAlbums = [NSMutableArray array];
     [_photoAlbums enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        AMPhotoAlbum *photoAlbum = (AMPhotoAlbum *)obj;
-        AMPhotoChangeDetails *changeDetails = [changeInstance changeDetailsForObject:photoAlbum];
+        id<AMPhotoAlbum> photoAlbum = obj;
+        id<AMPhotoChangeDetails> changeDetails = [changeInstance changeDetailsForObject:photoAlbum];
         if (nil == changeDetails) {
             return;
         }

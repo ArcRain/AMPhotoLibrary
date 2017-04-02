@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Sora Yang. All rights reserved.
 //
 
+#import "AMALChange.h"
+#import "AMALAlbum.h"
 #import "AMALAssetsLibrary.h"
-#import <AssetsLibrary/AssetsLibrary.h>
-#import "AMPhotoChange_Private.h"
 
 @interface AMALAssetsLibrary ()
 {
@@ -127,8 +127,8 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
 
 - (void)checkAlbum:(NSString *)title resultBlock:(AMPhotoManagerCheckBlock)resultBlock
 {
-    __block AMPhotoAlbum *foundAlbum = nil;
-    [self enumerateAlbums:^(AMPhotoAlbum *album, BOOL *stop) {
+    __block id<AMPhotoAlbum> foundAlbum = nil;
+    [self enumerateAlbums:^(id<AMPhotoAlbum> album, BOOL *stop) {
         if ([album.title isEqualToString: title]) {
             foundAlbum = album;
             *stop = YES;
@@ -154,7 +154,7 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
             return;
         }
         if (enumerationBlock) {
-            AMPhotoAlbum *photoAlbum = [AMPhotoAlbum photoAlbumWithALAssetsGroup: group];
+            id<AMPhotoAlbum> photoAlbum = [AMALAlbum photoAlbumWithALAssetsGroup: group];
             enumerationBlock(photoAlbum, stop);
         }
     } failureBlock:^(NSError *error) {
@@ -162,9 +162,11 @@ static AMALAssetsLibrary *s_sharedPhotoManager = nil;
     }];    
 }
 
-- (void)addAsset:(AMPhotoAsset *)asset toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
+- (void)addAsset:(id<AMPhotoAsset>)asset toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
-    BOOL hasAdded = [[photoAlbum asALAssetsGroup] addAsset:[asset asALAsset]];
+    ALAssetsGroup *alGroup = photoAlbum.wrappedInstance;
+    ALAsset *alAsset = asset.wrappedInstance;
+    BOOL hasAdded = [alGroup addAsset:alAsset];
     if (resultBlock) {
         resultBlock(hasAdded, nil);
     }
@@ -178,8 +180,8 @@ enum {
 - (void)deleteAssets:(NSArray *)assets resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
     NSMutableArray *deleteAssets = [NSMutableArray array];
-    for (AMPhotoAsset *asset in assets) {
-        [deleteAssets addObject:[asset asALAsset]];
+    for (id<AMPhotoAsset> asset in assets) {
+        [deleteAssets addObject:asset.wrappedInstance];
     }
     if (0 == deleteAssets.count) {
         if (resultBlock) {
@@ -229,7 +231,7 @@ enum {
     }];
 }
 
-- (void)writeImage:(UIImage *)image toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
+- (void)writeImage:(UIImage *)image toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
     void (^notifyResult)(BOOL success, NSError *error) = ^(BOOL success, NSError *error) {
         if (resultBlock) {
@@ -247,7 +249,7 @@ enum {
                 notifyResult(NO, error);
                 return;
             }
-            BOOL success = [[photoAlbum asALAssetsGroup] addAsset: asset];
+            BOOL success = [photoAlbum.wrappedInstance addAsset: asset];
             notifyResult(success, nil);
         } failureBlock:^(NSError *error) {
             notifyResult(NO, error);
@@ -264,7 +266,7 @@ enum {
     }];
 }
 
-- (void)writeImageData:(NSData *)imageData metadata:(NSDictionary *)metadata toAlbum:(AMPhotoAlbum *)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
+- (void)writeImageData:(NSData *)imageData metadata:(NSDictionary *)metadata toAlbum:(id<AMPhotoAlbum>)photoAlbum resultBlock:(AMPhotoManagerResultBlock)resultBlock
 {
     void (^notifyResult)(BOOL success, NSError *error) = ^(BOOL success, NSError *error) {
         if (resultBlock) {
@@ -282,7 +284,7 @@ enum {
                 notifyResult(NO, error);
                 return;
             }
-            BOOL success = [[photoAlbum asALAssetsGroup] addAsset: asset];
+            BOOL success = [photoAlbum.wrappedInstance addAsset: asset];
             notifyResult(success, nil);
         } failureBlock:^(NSError *error) {
             notifyResult(NO, error);
@@ -310,14 +312,14 @@ enum {
  */
 - (void)assetsLibraryDidChange:(NSNotification *)note
 {
-    AMPhotoChange *photoChange = nil;
+    AMALChange *photoChange = nil;
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0")) {
         NSDictionary *userInfo = note.userInfo;
         if (nil != userInfo) {
             if ([userInfo allKeys].count == 0) {
                 return;
             }
-            photoChange = [AMPhotoChange changeWithALChange: userInfo];
+            photoChange = [AMALChange changeWithALChange: userInfo];
             
             NSSet *insertedAssetsGroups = userInfo[ALAssetLibraryInsertedAssetGroupsKey];
             [photoChange setAlbumCreated:insertedAssetsGroups.count > 0];

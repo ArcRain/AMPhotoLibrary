@@ -9,19 +9,24 @@
 /* Begin PBXBuildFile section */
 		D535FEDB19D8079800BC1375 /* PhotoAlbumViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D535FEDA19D8079800BC1375 /* PhotoAlbumViewController.m */; };
 		D535FEDE19D8091700BC1375 /* PhotoAssetsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D535FEDD19D8091700BC1375 /* PhotoAssetsViewController.m */; };
-		D535FEE119D80B3500BC1375 /* AMPhotoAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = D535FEE019D80B3500BC1375 /* AMPhotoAsset.m */; };
 		D564644219D79FB3000F7B34 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D564644119D79FB3000F7B34 /* main.m */; };
 		D564644519D79FB3000F7B34 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D564644419D79FB3000F7B34 /* AppDelegate.m */; };
 		D564644D19D79FB3000F7B34 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D564644C19D79FB3000F7B34 /* Images.xcassets */; };
 		D564645019D79FB3000F7B34 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D564644E19D79FB3000F7B34 /* LaunchScreen.xib */; };
 		D564646819D79FF7000F7B34 /* AMPhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D564646719D79FF7000F7B34 /* AMPhotoLibrary.m */; };
-		D564646F19D7A3FD000F7B34 /* AMALAssetsLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D564646E19D7A3FD000F7B34 /* AMALAssetsLibrary.m */; };
-		D564647619D7AB2B000F7B34 /* AMPhotoAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = D564647519D7AB2B000F7B34 /* AMPhotoAlbum.m */; };
 		D564647F19D7B6B4000F7B34 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D564647B19D7B6A7000F7B34 /* AssetsLibrary.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		D564648019D7B6B8000F7B34 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D564647D19D7B6AC000F7B34 /* Photos.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		D564648619D7DD22000F7B34 /* AMPHPhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = D564648519D7DD22000F7B34 /* AMPHPhotoLibrary.m */; };
-		D572D4E819F0B18F00346596 /* AMPhotoChange.m in Sources */ = {isa = PBXBuildFile; fileRef = D572D4E719F0B18F00346596 /* AMPhotoChange.m */; };
 		D57A210E19D93C2D009DFDD9 /* PhotoDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D57A210D19D93C2D009DFDD9 /* PhotoDetailViewController.m */; };
+		F19421081D8A465F006DEBF1 /* AMPHPhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F19421071D8A465F006DEBF1 /* AMPHPhotoLibrary.m */; };
+		F194210B1D8A46ED006DEBF1 /* AMPHAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F194210A1D8A46ED006DEBF1 /* AMPHAsset.m */; };
+		F194210E1D8A4F49006DEBF1 /* AMPHAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = F194210D1D8A4F49006DEBF1 /* AMPHAlbum.m */; };
+		F19421111D8A4FD6006DEBF1 /* AMAssetsFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F19421101D8A4FD6006DEBF1 /* AMAssetsFilter.m */; };
+		F19421141D8A8045006DEBF1 /* AMALAssetsLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F19421131D8A8045006DEBF1 /* AMALAssetsLibrary.m */; };
+		F19421171D8A8387006DEBF1 /* AMALAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = F19421161D8A8387006DEBF1 /* AMALAlbum.m */; };
+		F194211A1D8A8FE2006DEBF1 /* AMALAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F19421191D8A8FE2006DEBF1 /* AMALAsset.m */; };
+		F194211D1D8AA464006DEBF1 /* AMPHChange.m in Sources */ = {isa = PBXBuildFile; fileRef = F194211C1D8AA464006DEBF1 /* AMPHChange.m */; };
+		F19421201D8AE92F006DEBF1 /* AMALChange.m in Sources */ = {isa = PBXBuildFile; fileRef = F194211F1D8AE92F006DEBF1 /* AMALChange.m */; };
+		F19421231D8AF5F2006DEBF1 /* AMPhotoAssetUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F19421221D8AF5F2006DEBF1 /* AMPhotoAssetUtility.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,7 +35,6 @@
 		D535FEDC19D8091700BC1375 /* PhotoAssetsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoAssetsViewController.h; sourceTree = "<group>"; };
 		D535FEDD19D8091700BC1375 /* PhotoAssetsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoAssetsViewController.m; sourceTree = "<group>"; };
 		D535FEDF19D80B3500BC1375 /* AMPhotoAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoAsset.h; path = AMPhotoLibrary/AMPhotoAsset.h; sourceTree = "<group>"; };
-		D535FEE019D80B3500BC1375 /* AMPhotoAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMPhotoAsset.m; path = AMPhotoLibrary/AMPhotoAsset.m; sourceTree = "<group>"; };
 		D564643C19D79FB3000F7B34 /* AMPhotoLibrary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AMPhotoLibrary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D564644019D79FB3000F7B34 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D564644119D79FB3000F7B34 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -40,21 +44,34 @@
 		D564644F19D79FB3000F7B34 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		D564646619D79FF7000F7B34 /* AMPhotoLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoLibrary.h; path = AMPhotoLibrary/AMPhotoLibrary.h; sourceTree = "<group>"; };
 		D564646719D79FF7000F7B34 /* AMPhotoLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMPhotoLibrary.m; path = AMPhotoLibrary/AMPhotoLibrary.m; sourceTree = "<group>"; };
-		D564646D19D7A3FD000F7B34 /* AMALAssetsLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMALAssetsLibrary.h; path = AMPhotoLibrary/AMALAssetsLibrary.h; sourceTree = "<group>"; };
-		D564646E19D7A3FD000F7B34 /* AMALAssetsLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMALAssetsLibrary.m; path = AMPhotoLibrary/AMALAssetsLibrary.m; sourceTree = "<group>"; };
 		D564647019D7A413000F7B34 /* AMPhotoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoManager.h; path = AMPhotoLibrary/AMPhotoManager.h; sourceTree = "<group>"; };
 		D564647419D7AB2B000F7B34 /* AMPhotoAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoAlbum.h; path = AMPhotoLibrary/AMPhotoAlbum.h; sourceTree = "<group>"; };
-		D564647519D7AB2B000F7B34 /* AMPhotoAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMPhotoAlbum.m; path = AMPhotoLibrary/AMPhotoAlbum.m; sourceTree = "<group>"; };
 		D564647A19D7B262000F7B34 /* AMPhotoLibrary_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AMPhotoLibrary_Prefix.pch; sourceTree = "<group>"; };
 		D564647B19D7B6A7000F7B34 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		D564647D19D7B6AC000F7B34 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
-		D564648419D7DD22000F7B34 /* AMPHPhotoLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPHPhotoLibrary.h; path = AMPhotoLibrary/AMPHPhotoLibrary.h; sourceTree = "<group>"; };
-		D564648519D7DD22000F7B34 /* AMPHPhotoLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMPHPhotoLibrary.m; path = AMPhotoLibrary/AMPHPhotoLibrary.m; sourceTree = "<group>"; };
 		D572D4E619F0B18F00346596 /* AMPhotoChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoChange.h; path = AMPhotoLibrary/AMPhotoChange.h; sourceTree = "<group>"; };
-		D572D4E719F0B18F00346596 /* AMPhotoChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMPhotoChange.m; path = AMPhotoLibrary/AMPhotoChange.m; sourceTree = "<group>"; };
-		D572D4E919F0B86F00346596 /* AMPhotoChange_Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoChange_Private.h; path = AMPhotoLibrary/AMPhotoChange_Private.h; sourceTree = "<group>"; };
 		D57A210C19D93C2D009DFDD9 /* PhotoDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoDetailViewController.h; sourceTree = "<group>"; };
 		D57A210D19D93C2D009DFDD9 /* PhotoDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoDetailViewController.m; sourceTree = "<group>"; };
+		F19421061D8A465F006DEBF1 /* AMPHPhotoLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMPHPhotoLibrary.h; sourceTree = "<group>"; };
+		F19421071D8A465F006DEBF1 /* AMPHPhotoLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AMPHPhotoLibrary.m; sourceTree = "<group>"; };
+		F19421091D8A46ED006DEBF1 /* AMPHAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMPHAsset.h; sourceTree = "<group>"; };
+		F194210A1D8A46ED006DEBF1 /* AMPHAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AMPHAsset.m; sourceTree = "<group>"; };
+		F194210C1D8A4F49006DEBF1 /* AMPHAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMPHAlbum.h; sourceTree = "<group>"; };
+		F194210D1D8A4F49006DEBF1 /* AMPHAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AMPHAlbum.m; sourceTree = "<group>"; };
+		F194210F1D8A4FD6006DEBF1 /* AMAssetsFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMAssetsFilter.h; path = AMPhotoLibrary/AMAssetsFilter.h; sourceTree = "<group>"; };
+		F19421101D8A4FD6006DEBF1 /* AMAssetsFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMAssetsFilter.m; path = AMPhotoLibrary/AMAssetsFilter.m; sourceTree = "<group>"; };
+		F19421121D8A8045006DEBF1 /* AMALAssetsLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMALAssetsLibrary.h; sourceTree = "<group>"; };
+		F19421131D8A8045006DEBF1 /* AMALAssetsLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AMALAssetsLibrary.m; sourceTree = "<group>"; };
+		F19421151D8A8387006DEBF1 /* AMALAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMALAlbum.h; sourceTree = "<group>"; };
+		F19421161D8A8387006DEBF1 /* AMALAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AMALAlbum.m; sourceTree = "<group>"; };
+		F19421181D8A8FE2006DEBF1 /* AMALAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMALAsset.h; sourceTree = "<group>"; };
+		F19421191D8A8FE2006DEBF1 /* AMALAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AMALAsset.m; sourceTree = "<group>"; };
+		F194211B1D8AA464006DEBF1 /* AMPHChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMPHChange.h; sourceTree = "<group>"; };
+		F194211C1D8AA464006DEBF1 /* AMPHChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AMPHChange.m; sourceTree = "<group>"; };
+		F194211E1D8AE92F006DEBF1 /* AMALChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMALChange.h; sourceTree = "<group>"; };
+		F194211F1D8AE92F006DEBF1 /* AMALChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AMALChange.m; sourceTree = "<group>"; };
+		F19421211D8AF5F2006DEBF1 /* AMPhotoAssetUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMPhotoAssetUtility.h; path = AMPhotoLibrary/AMPhotoAssetUtility.h; sourceTree = "<group>"; };
+		F19421221D8AF5F2006DEBF1 /* AMPhotoAssetUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMPhotoAssetUtility.m; path = AMPhotoLibrary/AMPhotoAssetUtility.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,22 +137,52 @@
 		D564646519D79FD0000F7B34 /* AMPhotoLibrary */ = {
 			isa = PBXGroup;
 			children = (
+				F19421031D8A45F6006DEBF1 /* ALAssetsLibrary */,
+				F19421051D8A45F6006DEBF1 /* PhotoKit */,
 				D564647019D7A413000F7B34 /* AMPhotoManager.h */,
-				D572D4E919F0B86F00346596 /* AMPhotoChange_Private.h */,
-				D572D4E619F0B18F00346596 /* AMPhotoChange.h */,
-				D572D4E719F0B18F00346596 /* AMPhotoChange.m */,
 				D564646619D79FF7000F7B34 /* AMPhotoLibrary.h */,
 				D564646719D79FF7000F7B34 /* AMPhotoLibrary.m */,
-				D564646D19D7A3FD000F7B34 /* AMALAssetsLibrary.h */,
-				D564646E19D7A3FD000F7B34 /* AMALAssetsLibrary.m */,
-				D564648419D7DD22000F7B34 /* AMPHPhotoLibrary.h */,
-				D564648519D7DD22000F7B34 /* AMPHPhotoLibrary.m */,
+				D572D4E619F0B18F00346596 /* AMPhotoChange.h */,
 				D564647419D7AB2B000F7B34 /* AMPhotoAlbum.h */,
-				D564647519D7AB2B000F7B34 /* AMPhotoAlbum.m */,
 				D535FEDF19D80B3500BC1375 /* AMPhotoAsset.h */,
-				D535FEE019D80B3500BC1375 /* AMPhotoAsset.m */,
+				F19421211D8AF5F2006DEBF1 /* AMPhotoAssetUtility.h */,
+				F19421221D8AF5F2006DEBF1 /* AMPhotoAssetUtility.m */,
+				F194210F1D8A4FD6006DEBF1 /* AMAssetsFilter.h */,
+				F19421101D8A4FD6006DEBF1 /* AMAssetsFilter.m */,
 			);
 			name = AMPhotoLibrary;
+			sourceTree = "<group>";
+		};
+		F19421031D8A45F6006DEBF1 /* ALAssetsLibrary */ = {
+			isa = PBXGroup;
+			children = (
+				F19421121D8A8045006DEBF1 /* AMALAssetsLibrary.h */,
+				F19421131D8A8045006DEBF1 /* AMALAssetsLibrary.m */,
+				F19421151D8A8387006DEBF1 /* AMALAlbum.h */,
+				F19421161D8A8387006DEBF1 /* AMALAlbum.m */,
+				F19421181D8A8FE2006DEBF1 /* AMALAsset.h */,
+				F19421191D8A8FE2006DEBF1 /* AMALAsset.m */,
+				F194211E1D8AE92F006DEBF1 /* AMALChange.h */,
+				F194211F1D8AE92F006DEBF1 /* AMALChange.m */,
+			);
+			name = ALAssetsLibrary;
+			path = AMPhotoLibrary/ALAssetsLibrary;
+			sourceTree = "<group>";
+		};
+		F19421051D8A45F6006DEBF1 /* PhotoKit */ = {
+			isa = PBXGroup;
+			children = (
+				F19421061D8A465F006DEBF1 /* AMPHPhotoLibrary.h */,
+				F19421071D8A465F006DEBF1 /* AMPHPhotoLibrary.m */,
+				F194210C1D8A4F49006DEBF1 /* AMPHAlbum.h */,
+				F194210D1D8A4F49006DEBF1 /* AMPHAlbum.m */,
+				F19421091D8A46ED006DEBF1 /* AMPHAsset.h */,
+				F194210A1D8A46ED006DEBF1 /* AMPHAsset.m */,
+				F194211B1D8AA464006DEBF1 /* AMPHChange.h */,
+				F194211C1D8AA464006DEBF1 /* AMPHChange.m */,
+			);
+			name = PhotoKit;
+			path = AMPhotoLibrary/PhotoKit;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -208,16 +255,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				D564646819D79FF7000F7B34 /* AMPhotoLibrary.m in Sources */,
+				F194211A1D8A8FE2006DEBF1 /* AMALAsset.m in Sources */,
+				F19421081D8A465F006DEBF1 /* AMPHPhotoLibrary.m in Sources */,
 				D535FEDB19D8079800BC1375 /* PhotoAlbumViewController.m in Sources */,
 				D535FEDE19D8091700BC1375 /* PhotoAssetsViewController.m in Sources */,
-				D564647619D7AB2B000F7B34 /* AMPhotoAlbum.m in Sources */,
-				D572D4E819F0B18F00346596 /* AMPhotoChange.m in Sources */,
+				F194211D1D8AA464006DEBF1 /* AMPHChange.m in Sources */,
+				F19421111D8A4FD6006DEBF1 /* AMAssetsFilter.m in Sources */,
+				F19421201D8AE92F006DEBF1 /* AMALChange.m in Sources */,
+				F194210E1D8A4F49006DEBF1 /* AMPHAlbum.m in Sources */,
 				D564644519D79FB3000F7B34 /* AppDelegate.m in Sources */,
-				D535FEE119D80B3500BC1375 /* AMPhotoAsset.m in Sources */,
-				D564646F19D7A3FD000F7B34 /* AMALAssetsLibrary.m in Sources */,
+				F194210B1D8A46ED006DEBF1 /* AMPHAsset.m in Sources */,
+				F19421141D8A8045006DEBF1 /* AMALAssetsLibrary.m in Sources */,
+				F19421231D8AF5F2006DEBF1 /* AMPhotoAssetUtility.m in Sources */,
 				D564644219D79FB3000F7B34 /* main.m in Sources */,
+				F19421171D8A8387006DEBF1 /* AMALAlbum.m in Sources */,
 				D57A210E19D93C2D009DFDD9 /* PhotoDetailViewController.m in Sources */,
-				D564648619D7DD22000F7B34 /* AMPHPhotoLibrary.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

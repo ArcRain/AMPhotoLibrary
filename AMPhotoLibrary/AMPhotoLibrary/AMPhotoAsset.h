@@ -7,6 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AssetsLibrary/AssetsLibrary.h>
+#import <AVFoundation/AVFoundation.h>
+#import <CoreLocation/CoreLocation.h>
+
+#define AMPhotoAssetThumbnailSize CGSizeMake(160, 160)
 
 typedef NS_ENUM(NSInteger, AMAssetMediaType) {
     AMAssetMediaTypeUnknown = 0,
@@ -15,8 +20,18 @@ typedef NS_ENUM(NSInteger, AMAssetMediaType) {
     AMAssetMediaTypeAudio   = 3,
 };
 
-@interface AMPhotoAsset : NSObject
+typedef NS_ENUM(NSInteger, AMAssetImageType) {
+    AMAssetImageTypeThumbnail = 0,
+    AMAssetImageTypeAspectRatioThumbnail = 1,
+    AMAssetImageTypeFullScreen = 2,
+    AMAssetImageTypeFullResolution = 3
+};
 
+@protocol AMPhotoAsset <NSObject>
+
+@required
+
+@property (nonatomic, readonly, strong) id wrappedInstance;
 @property (nonatomic, readonly, assign) AMAssetMediaType mediaType;
 
 @property (nonatomic, readonly, assign) CGSize dimensions;
@@ -44,33 +59,10 @@ typedef NS_ENUM(NSInteger, AMAssetMediaType) {
 //Video Property
 @property (nonatomic, readonly, assign) NSTimeInterval duration;
 
-+ (AMPhotoAsset *)photoAssetWithALAsset:(ALAsset *)asset;
-- (ALAsset *)asALAsset;
-
-#ifdef __AMPHOTOLIB_USE_PHOTO__
-+ (AMPhotoAsset *)photoAssetWithPHAsset:(PHAsset *)asset;
-- (PHAsset *)asPHAsset;
-#endif
-
-+ (NSURL *)fetchPlayerItemURL:(AVPlayerItem *)playerItem;
-
-/*
- For Image: use rawData
- For Video: use playerItem, for URL use 'fetchPlayerItemURL'
- For iOS8 below: use assetRepresentation
- */
-+ (void)fetchAsset:(AMPhotoAsset *)asset rawData:(void(^)(NSData *rawData, AVPlayerItem *playerItem, ALAssetRepresentation *assetRepresentation))resultBlock;
-
-typedef NS_ENUM(NSInteger, AMAssetImageType) {
-    AMAssetImageTypeThumbnail = 0,
-    AMAssetImageTypeAspectRatioThumbnail = 1,
-    AMAssetImageTypeFullScreen = 2,
-    AMAssetImageTypeFullResolution = 3
-};
-
-/*
- For async mode get image, use this method
- */
-+ (void)fetchAsset:(AMPhotoAsset *)asset withImageType:(AMAssetImageType)imageType imageResult:(void(^)(UIImage *image))resultBlock;
++ (void)fetchAsset:(id<AMPhotoAsset>)asset rawData:(void (^)(NSData *, AVPlayerItem *))resultBlock;
++ (void)fetchAsset:(id<AMPhotoAsset>)asset
+     withImageType:(AMAssetImageType)imageType
+          syncMode:(BOOL)isSynchronous
+        completion:(void (^)(UIImage *))resultBlock;
 
 @end

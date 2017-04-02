@@ -10,6 +10,6 @@
 
 @interface PhotoDetailViewController : UIViewController
 
-@property (nonatomic, strong) AMPhotoAsset *photoAsset;
+@property (nonatomic, strong) id<AMPhotoAsset> photoAsset;
 
 @end

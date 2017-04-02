@@ -6,7 +6,6 @@
 //  Copyright (c) 2014 Sora Yang. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "AMPhotoManager.h"
 
 @interface AMALAssetsLibrary : NSObject <AMPhotoManager>
